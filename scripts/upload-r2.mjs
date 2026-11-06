@@ -7,7 +7,8 @@ const mode = process.argv.includes('--remote') ? '--remote' : '--local';
 const BUCKET = 'saltmarsh-clients';
 const types = { '.jpg': 'image/jpeg', '.html': 'text/html; charset=utf-8', '.json': 'application/json' };
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
-const files = walk('private-out');
+const only = process.argv.includes('--client') ? process.argv[process.argv.indexOf('--client') + 1] : null;
+const files = walk(only ? `private-out/clients/${only}` : 'private-out');
 console.log(`uploading ${files.length} objects (${mode}) to ${BUCKET}`);
 for (const f of files) {
   const key = path.relative('private-out', f).replace(/\\/g, '/');

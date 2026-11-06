@@ -88,8 +88,10 @@ No new code is needed. Example: slug `jones-family`.
    Sizes that tile a row exactly: `hero` · `wide`+`tall` · `tall`×3 · `half`×2 · `third`×3.
 4. **Set the password.** Add `"jones-family": "a-long-password"` to `demo-passwords.local.json`
    (gitignored), then `npm run set-passwords jones-family`. This writes only a salted hash into the data file.
-5. **Build and upload.** `npm run build`, then `npx wrangler login` (once, on your own computer) and
-   `npm run upload:remote`. The gallery goes live immediately, because pages and images live in R2.
+5. **Build and upload just this client.** `npm run build -- --client jones-family`, then (once, on your own
+   computer) `npx wrangler login`, then `node scripts/upload-r2.mjs --remote --client jones-family`.
+   The gallery goes live immediately, because pages and images live in R2. Other clients' files are not
+   needed and are not touched.
 6. **Push** the new data file so the repo matches: `git add src/content/clients && git commit && git push`.
 7. **Test.** `SMITH_PW=... bash tests/verify-protection.sh <url>`, or just open `/clients/jones-family`
    and log in. Send the client the link and password through different channels.
