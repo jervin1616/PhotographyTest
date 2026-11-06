@@ -118,6 +118,22 @@ await p.goto(BASE + '/portfolio/'); await p.waitForTimeout(600);
 await p.locator('.masonry a').first().tap(); await p.waitForTimeout(500);
 ok('mobile: lightbox opens on tap', await p.locator('.lb.open').count() === 1);
 
+// ---- lightbox shows every photo WHOLE (not cropped/zoomed) on desktop, laptop and phones, portrait and landscape
+for (const [label, vp, mobile] of [['desktop 1440x900', { width: 1440, height: 900 }, false], ['laptop 1280x720', { width: 1280, height: 720 }, false], ['phone 390x844', { width: 390, height: 844 }, true], ['phone landscape 844x390', { width: 844, height: 390 }, true]]) {
+  const q = await page(vp, { isMobile: mobile, hasTouch: mobile });
+  await q.goto(BASE + '/portfolio/'); await q.waitForTimeout(800);
+  await q.locator('.masonry a').first().click(); await q.waitForTimeout(400);
+  const bad = [];
+  for (let i = 0; i < 18; i++) {
+    await q.waitForFunction(() => { const im = document.querySelector('.lb img'); return im && im.complete && im.naturalWidth > 0; });
+    await q.waitForTimeout(350);
+    const r = await q.evaluate(() => { const im = document.querySelector('.lb img'), b = im.getBoundingClientRect(); return { l: b.left, t: b.top, r: b.right, bt: b.bottom, w: b.width, h: b.height, nw: im.naturalWidth, nh: im.naturalHeight, vw: innerWidth, vh: innerHeight, t2: document.querySelector('.lb-title').textContent }; });
+    if (r.l < -1 || r.t < -1 || r.r > r.vw + 1 || r.bt > r.vh + 1 || Math.abs(r.w / r.h / (r.nw / r.nh) - 1) > 0.02) bad.push(r.t2);
+    await q.keyboard.press('ArrowRight');
+  }
+  ok(`lightbox: all 18 photos shown whole on ${label}`, bad.length === 0, bad.slice(0, 3).join(', '));
+}
+
 // ---- every image on every page actually loads (catches broken srcset/WebP paths)
 p = await page();
 for (const path of ['/', '/portfolio/', '/services/', '/about/', '/contact/', '/client-login/']) {

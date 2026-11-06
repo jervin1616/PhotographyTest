@@ -247,8 +247,13 @@ body { animation: pageIn .45s ease-out; }
   .lb { position: fixed; inset: 0; z-index: 90; display: none; background: rgba(5,10,15,.95); }
   .lb.open { display: block; animation: lbIn .35s ease; }
   @keyframes lbIn { from { opacity: 0; } }
-  .lb figure { position: absolute; inset: 3.5rem 1rem 5rem; display: grid; place-items: center; margin: 0; }
-  .lb img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; animation: lbImg .5s var(--ease-out-expo); }
+  /* the photo is limited by the SCREEN size (not by percentages, which do not constrain it here) so any
+     photo, tall or wide, is always shown whole. Space is reserved for the caption bar and the arrows. */
+  .lb { --lb-top: 3.75rem; --lb-bottom: 6rem; --lb-side: 1rem; }
+  @media (min-width: 820px) { .lb { --lb-side: 6rem; } }
+  @media (max-height: 520px) { .lb { --lb-top: 2.25rem; --lb-bottom: 4.6rem; --lb-side: 4.25rem; } .lb .lb-title { font-size: 1.1rem; } .lb .lb-bar { padding-block: .5rem; } .lb .lb-count { top: .6rem; } }
+  .lb figure { position: absolute; inset: var(--lb-top) var(--lb-side) var(--lb-bottom); display: flex; align-items: center; justify-content: center; margin: 0; overflow: hidden; }
+  .lb img { display: block; width: auto; height: auto; max-width: calc(100vw - 2 * var(--lb-side)); max-height: calc(100vh - var(--lb-top) - var(--lb-bottom)); max-height: calc(100dvh - var(--lb-top) - var(--lb-bottom)); object-fit: contain; animation: lbImg .5s var(--ease-out-expo); }
   @keyframes lbImg { from { opacity: 0; transform: scale(.97); } }
   .lb .lb-bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 1rem 1.25rem 1.25rem; text-align: center; }
   .lb .lb-title { font-family: var(--font-serif); font-size: 1.5rem; }
@@ -258,7 +263,6 @@ body { animation: pageIn .45s ease-out; }
   .lb button:hover { background: var(--color-paper); color: var(--color-ink); }
   .lb .lb-x { top: .75rem; right: .75rem; } .lb .lb-prev { left: .75rem; top: 50%; margin-top: -1.5rem; } .lb .lb-next { right: .75rem; top: 50%; margin-top: -1.5rem; }
   .lb .lb-count { position: absolute; top: 1.1rem; left: 1.25rem; font-size: .72rem; letter-spacing: .2em; color: var(--color-mist); }
-  @media (min-width: 820px) { .lb figure { inset: 4rem 6rem 5.5rem; } }
 
   /* custom cursor ("View" bubble over photos; fine pointers only) */
   .cursor { position: fixed; left: 0; top: 0; z-index: 85; width: 88px; height: 88px; margin: -44px 0 0 -44px; display: grid; place-items: center; border-radius: 999px; background: rgba(236,228,214,.93); color: var(--color-ink); font-size: .66rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; pointer-events: none; opacity: 0; transform: translate3d(-200px, -200px, 0) scale(.3); transition: opacity .25s, scale .35s var(--ease-out-expo); }
