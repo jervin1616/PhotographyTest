@@ -9,6 +9,8 @@
 //   clients/<slug>/img/<file>     watermarked proofs
 // The only way to read them is through this Worker, after the cookie check.
 
+import EVENTS from '../src/data/events.json';
+
 const SLUG_RE = /^[a-z0-9-]{1,64}$/;
 const IMG_RE = /^[A-Za-z0-9_-]{1,64}\.(jpg|jpeg|png|webp)$/;
 const COOKIE_TTL = 60 * 60 * 24 * 7; // 7 days
@@ -46,7 +48,7 @@ export default {
 
     // ---- GET /clients/<slug>  (the gallery page, or the login form)
     if (rest === '' || rest === '/') {
-      if (!authed) return loginPage(slug, '', 200, url.origin); // 200 (login form only): link-preview bots ignore error pages
+      if (!authed) return loginPage(slug, '', 200, url.origin, (await getMeta(env, slug))?.event); // 200 (login form only): link-preview bots ignore error pages
       const page = await env.CLIENTS.get(`clients/${slug}/page.html`);
       if (!page) return text('Not found', 404);
       return secure(new Response(request.method === 'HEAD' ? null : page.body, {
@@ -73,21 +75,21 @@ export default {
 
 async function handleLogin(request, env, slug) {
   const origin = new URL(request.url).origin;
+  const meta = await getMeta(env, slug);
+  const event = meta?.event;
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
   // 1) per-IP attempt limit BEFORE doing any expensive work
   const { success } = await env.LOGIN_LIMITER.limit({ key: `${slug}:${ip}` });
-  if (!success) return loginPage(slug, 'Too many attempts. Please wait a minute and try again.', 429, origin);
+  if (!success) return loginPage(slug, 'Too many attempts. Please wait a minute and try again.', 429, origin, event);
 
   let password = '';
   try {
     const len = Number(request.headers.get('content-length') || 0);
-    if (len > 2048) return loginPage(slug, 'Incorrect password.', 401, origin);
+    if (len > 2048) return loginPage(slug, 'Incorrect password.', 401, origin, event);
     password = String((await request.formData()).get('password') || '').slice(0, 200);
   } catch { /* fall through: empty password fails below */ }
 
   // 2) load stored hash; for unknown slugs use a dummy so timing looks the same
-  const metaObj = await env.CLIENTS.get(`clients/${slug}/meta.json`);
-  const meta = metaObj ? await metaObj.json() : null;
   const salt = meta ? hexToBytes(meta.salt) : new Uint8Array(16);
   const iterations = meta ? meta.iterations : 100000;
   const expected = meta ? hexToBytes(meta.hash) : new Uint8Array(32);
@@ -97,9 +99,15 @@ async function handleLogin(request, env, slug) {
 
   if (!ok) {
     await new Promise((r) => setTimeout(r, FAIL_DELAY_MS));
-    return loginPage(slug, 'Incorrect password.', 401, origin); // same message for every failure
+    return loginPage(slug, 'Incorrect password.', 401, origin, event); // same message for every failure
   }
   return redirect(`/clients/${slug}`, [await makeCookie(env, slug)]);
+}
+
+// meta.json = { title, event, iterations, salt, hash }. Only `event` is ever shown to visitors.
+async function getMeta(env, slug) {
+  const obj = await env.CLIENTS.get(`clients/${slug}/meta.json`);
+  return obj ? obj.json() : null;
 }
 
 // ------------------------------------------------------------------ crypto helpers
@@ -166,7 +174,7 @@ function secure(res) {
   h.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   h.set('X-Content-Type-Options', 'nosniff');
   h.set('Referrer-Policy', 'no-referrer');
-  h.set('Content-Security-Policy', "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+  h.set('Content-Security-Policy', "default-src 'none'; img-src 'self'; font-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
   return new Response(res.body, { status: res.status, headers: h });
 }
 
@@ -191,31 +199,58 @@ function sameOrigin(request, url) {
   return true;
 }
 
-function loginPage(slug, message, status, origin) {
-  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function loginPage(slug, message, status, origin, eventKey) {
+  const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const key = Object.hasOwn(EVENTS, eventKey) ? eventKey : 'generic'; // only known keys: no stored text is ever rendered
+  const ev = EVENTS[key];
+  const title = `${ev.heading} · Saltmarsh Photo Co.`;
+  const card = `${origin}/og-gallery-${key}.jpg`;
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex, nofollow"><title>Private gallery · Saltmarsh Photo Co.</title>
+<meta name="robots" content="noindex, nofollow"><title>${esc(title)}</title><meta name="theme-color" content="#0b1620">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Saltmarsh Photo Co.">
-<meta property="og:title" content="Private gallery · Saltmarsh Photo Co."><meta property="og:description" content="Enter the password we sent you to view your photos.">
-<meta property="og:url" content="${esc(origin)}/clients/${esc(slug)}"><meta property="og:image" content="${esc(origin)}/og-gallery.jpg">
-<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="A padlock: private client gallery">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Private gallery · Saltmarsh Photo Co."><meta name="twitter:image" content="${esc(origin)}/og-gallery.jpg">
+<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(ev.ogDescription)}">
+<meta property="og:url" content="${esc(origin)}/clients/${esc(slug)}"><meta property="og:image" content="${esc(card)}">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(ev.heading)}: private client gallery">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(ev.ogDescription)}"><meta name="twitter:image" content="${esc(card)}">
+<link rel="preload" href="/fonts/great-vibes.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b1620;color:#ece4d6;font:16px/1.5 Inter,system-ui,sans-serif;color-scheme:dark}
-main{width:min(92vw,26rem);padding:2rem;background:#142231;border:1px solid #26384a}
-h1{font:400 1.9rem/1.1 "Iowan Old Style",Palatino,Georgia,serif;margin:0 0 .5rem}
-p{margin:.25rem 0 1rem;color:#a9b4bb}label{display:block;font-size:.85rem;margin-bottom:.35rem}
-input{width:100%;box-sizing:border-box;padding:.75rem 1rem;border:1px solid #3b5064;background:#0b1620;color:#ece4d6;font:inherit}
+@font-face{font-family:"Great Vibes";src:url("/fonts/great-vibes.woff2") format("woff2");font-weight:400;font-display:swap}
+*{box-sizing:border-box}
+body{margin:0;min-height:100svh;display:flex;flex-direction:column;background:#0b1620;color:#ece4d6;font:16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color-scheme:dark;position:relative;overflow-x:hidden}
+.bg{position:fixed;inset:-24px;z-index:-1;background:#0b1620 url("/photos/portfolio/${esc(ev.backdrop)}-1200.jpg") center/cover no-repeat;filter:blur(16px) brightness(.5) saturate(1.1)}
+.bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(11,22,32,.35),rgba(11,22,32,.85))}
+header{padding:1.25rem 1.5rem}
+header a{font:400 1.25rem/1 "Iowan Old Style",Palatino,Georgia,serif;color:#ece4d6;text-decoration:none;letter-spacing:.01em}
+header a span{color:#9fc9bd}
+main{flex:1;display:grid;place-items:center;padding:1rem 1rem 3rem}
+.card{width:min(100%,26rem);padding:2rem 1.75rem 1.75rem;background:rgba(11,22,32,.78);border:1px solid rgba(236,228,214,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-align:center}
+.eyebrow{margin:0;font-size:.7rem;letter-spacing:.26em;text-transform:uppercase;color:#9fc9bd}
+h1{margin:.6rem 0 0;font:400 clamp(2.6rem,11vw,3.4rem)/1.05 "Great Vibes","Snell Roundhand","Apple Chancery",cursive;color:#ece4d6}
+.msg{margin:.9rem 0 1.5rem;color:#a9b4bb}
+form{text-align:left}
+label{display:block;font-size:.85rem;margin-bottom:.35rem;color:#ece4d6}
+input{width:100%;padding:.8rem 1rem;border:1px solid #3b5064;background:#0b1620;color:#ece4d6;font:inherit}
 input:focus{outline:2px solid #9fc9bd;outline-offset:1px}
-button{margin-top:1rem;width:100%;padding:.8rem;background:#ece4d6;color:#0b1620;border:0;font:inherit;cursor:pointer}
-button:hover{background:#9fc9bd}.err{color:#fca5a5;margin-top:.75rem}a{color:inherit}
-</style></head><body><main>
-<h1>Private gallery</h1><p>Enter the password we sent you to view this gallery.</p>
+button{margin-top:1rem;width:100%;padding:.85rem;background:#ece4d6;color:#0b1620;border:0;font:inherit;font-weight:500;letter-spacing:.02em;cursor:pointer}
+button:hover{background:#9fc9bd}
+.err{color:#fca5a5;margin:.75rem 0 0;font-size:.95rem}
+.help{margin:1.5rem 0 0;font-size:.85rem;text-align:center}.help a{color:#a9b4bb}
+footer{padding:0 1rem 1.25rem;text-align:center;font-size:.75rem;color:#a9b4bb}
+</style></head><body>
+<div class="bg" aria-hidden="true"></div>
+<header><a href="/">Saltmarsh <span>Photo Co.</span></a></header>
+<main><div class="card">
+<p class="eyebrow">${esc(ev.eyebrow)}</p>
+<h1>${esc(ev.heading)}</h1>
+<p class="msg">${esc(ev.message)}</p>
 <form method="post" action="/clients/${esc(slug)}">
 <label for="pw">Password</label><input id="pw" name="password" type="password" autocomplete="current-password" required autofocus>
 <button type="submit">View gallery</button>
 ${message ? `<p class="err" role="alert">${esc(message)}</p>` : ''}
-</form><p style="margin-top:1.5rem;font-size:.85rem"><a href="/client-login/">How private galleries work</a></p>
-</main></body></html>`;
+</form>
+<p class="help"><a href="/client-login/">How private galleries work</a></p>
+</div></main>
+<footer>Saltmarsh Photo Co. · demo site</footer>
+</body></html>`;
   return secure(new Response(html, { status, headers: { 'content-type': 'text/html; charset=utf-8' } }));
 }

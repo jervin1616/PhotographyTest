@@ -1,6 +1,6 @@
 // Generates the two link-preview ("Open Graph") images in public/. Re-run after changing the branding.
 //  og.jpg          : the whole site (hero photo + wordmark)
-//  og-gallery.jpg  : private client gallery links. Deliberately NOT a client photo: preview images are public.
+//  og-gallery-<event>.jpg : private client gallery links, one per event type in src/data/events.json. Deliberately NOT a client photo: preview images are public.
 import sharp from 'sharp';
 
 const W = 1200, H = 630;
@@ -19,14 +19,22 @@ await sharp(base).composite([{ input: svg(`${grad}
   <text x="76" y="530" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" letter-spacing="6" fill="#9fc9bd">COASTAL PHOTOGRAPHY</text>
   <text x="76" y="582" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" fill="#a9b4bb">Weddings · Portraits · Landscapes</text>`) }]).jpeg({ quality: 82, mozjpeg: true }).toFile('public/og.jpg');
 
-// 2) private gallery card: blurred, darkened backdrop + padlock. Reveals nothing about any client.
-const blurred = await sharp(src).resize(W, H, { fit: 'cover' }).blur(14).modulate({ brightness: 0.55 }).toBuffer();
-await sharp(blurred).composite([{ input: svg(`
-  <rect width="${W}" height="${H}" fill="#0b1620" fill-opacity=".35"/>
-  <g transform="translate(600 205)" fill="none" stroke="#ece4d6" stroke-width="9" stroke-linecap="round">
-    <path d="M-42 -8 V-40 a42 42 0 0 1 84 0 V-8"/><rect x="-62" y="-8" width="124" height="96" rx="10" fill="#142231"/>
-    <circle cx="0" cy="34" r="9" fill="#ece4d6" stroke="none"/><path d="M0 40 V62" stroke-width="8"/></g>
-  <text x="600" y="395" text-anchor="middle" ${serif} font-size="70" fill="#ece4d6">Private Client Gallery</text>
-  <text x="600" y="455" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="28" fill="#a9b4bb">Enter the password we sent you to view your photos</text>
-  <text x="600" y="560" text-anchor="middle" ${serif} font-size="36" fill="#9fc9bd">Saltmarsh Photo Co.</text>`) }]).jpeg({ quality: 82, mozjpeg: true }).toFile('public/og-gallery.jpg');
-console.log('wrote public/og.jpg and public/og-gallery.jpg');
+// 2) private gallery cards, one per event type (src/data/events.json): blurred, darkened backdrop (a public
+//    portfolio photo) + padlock + heading. Never a client photo, and never a per-client file name: preview
+//    images are public, so a per-client file would reveal which clients exist.
+import fs from 'node:fs';
+const events = JSON.parse(fs.readFileSync('src/data/events.json', 'utf8'));
+const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+for (const [key, ev] of Object.entries(events)) {
+  const blurred = await sharp(`public/photos/portfolio/${ev.backdrop}-1800.jpg`).resize(W, H, { fit: 'cover' }).blur(14).modulate({ brightness: 0.55 }).toBuffer();
+  await sharp(blurred).composite([{ input: svg(`
+    <rect width="${W}" height="${H}" fill="#0b1620" fill-opacity=".35"/>
+    <g transform="translate(600 150) scale(.8)" fill="none" stroke="#ece4d6" stroke-width="9" stroke-linecap="round">
+      <path d="M-42 -8 V-40 a42 42 0 0 1 84 0 V-8"/><rect x="-62" y="-8" width="124" height="96" rx="10" fill="#142231"/>
+      <circle cx="0" cy="34" r="9" fill="#ece4d6" stroke="none"/><path d="M0 40 V62" stroke-width="8"/></g>
+    <text x="600" y="330" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" letter-spacing="7" fill="#9fc9bd">${esc(ev.eyebrow.toUpperCase())}</text>
+    <text x="600" y="420" text-anchor="middle" ${serif} font-size="78" fill="#ece4d6">${esc(ev.heading)}</text>
+    <text x="600" y="480" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="26" fill="#a9b4bb">Enter the password we sent you to view your photos</text>
+    <text x="600" y="565" text-anchor="middle" ${serif} font-size="34" fill="#9fc9bd">Saltmarsh Photo Co.</text>`) }]).jpeg({ quality: 82, mozjpeg: true }).toFile(`public/og-gallery-${key}.jpg`);
+}
+console.log('wrote public/og.jpg and', Object.keys(events).map((k) => `og-gallery-${k}.jpg`).join(', '));

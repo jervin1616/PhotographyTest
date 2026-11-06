@@ -1,6 +1,7 @@
 {
   "title": "Coastal Portraits",
-  "subtitle": "Shoreline sessions · proofs",
+  "subtitle": "Shoreline sessions \u00b7 proofs",
+  "event": "portrait",
   "password": {
     "algo": "PBKDF2-SHA256",
     "iterations": 100000,

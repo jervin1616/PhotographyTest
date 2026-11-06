@@ -1,0 +1,30 @@
+{
+  "wedding": {
+    "heading": "Your Special Day",
+    "eyebrow": "Wedding gallery",
+    "message": "Every moment, kept. Enter the password we sent you to relive it.",
+    "ogDescription": "Your wedding gallery is ready. Enter your password to view it.",
+    "backdrop": "weddings-04"
+  },
+  "portrait": {
+    "heading": "Your Portrait Session",
+    "eyebrow": "Portrait gallery",
+    "message": "Your portraits are ready. Enter the password we sent you to see them.",
+    "ogDescription": "Your portraits are ready. Enter your password to view them.",
+    "backdrop": "portraits-03"
+  },
+  "street": {
+    "heading": "Your City Stories",
+    "eyebrow": "Street photography gallery",
+    "message": "Your photographs are ready. Enter the password we sent you to view them.",
+    "ogDescription": "Your street photography gallery is ready. Enter your password to view it.",
+    "backdrop": "landscapes-02"
+  },
+  "generic": {
+    "heading": "Your Gallery",
+    "eyebrow": "Private gallery",
+    "message": "Enter the password we sent you to view your photos.",
+    "ogDescription": "Enter the password we sent you to view your photos.",
+    "backdrop": "landscapes-01"
+  }
+}

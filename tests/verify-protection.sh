@@ -92,8 +92,10 @@ check "7n. Real-browser login POST (Origin: null, same-origin) is not blocked (4
 lp=$(curl -s "$BASE/clients/$S"); lp2=$(curl -s "$BASE/clients/$P")
 oi=$(echo "$lp" | grep -o 'property="og:image" content="[^"]*"' | sed 's/.*content="//; s/"$//'); oi2=$(echo "$lp2" | grep -o 'property="og:image" content="[^"]*"' | sed 's/.*content="//; s/"$//')
 ic=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$oi")
-check "7o. Gallery link has a preview image that loads without a cookie ($ic)" "$(echo "$oi" | grep -qE '^https?://.*og-gallery.jpg$' && echo "$ic" | grep -q '^200 image/jpeg' && echo 1)" "og:image=$oi $ic"
-check "7p. Gallery preview is the same generic card for every client (never a client photo)" "$([ -n "$oi" ] && [ "$oi" = "$oi2" ] && ! echo "$oi" | grep -q '/clients/' && echo 1)" "$oi vs $oi2"
+check "7o. Gallery link has a preview image that loads without a cookie ($ic)" "$(echo "$oi" | grep -qE '^https?://[^/]+/og-gallery-[a-z]+\.jpg$' && echo "$ic" | grep -q '^200 image/jpeg' && echo 1)" "og:image=$oi $ic"
+check "7p. Gallery preview is a generic event card, never a client photo or per-client file" "$([ -n "$oi" ] && [ -n "$oi2" ] && ! echo "$oi$oi2" | grep -q '/clients/' && echo "$oi2" | grep -qE '/og-gallery-[a-z]+\.jpg$' && echo 1)" "$oi / $oi2"
+check "7r. Locked page never shows a client title (only the URL the visitor typed)" "$(echo "$lp$lp2" | grep -qiE 'smith wedding|peters street|coastal portraits' && echo 0 || echo 1)" "client title visible before login"
+check "7s. Login pages match the event (wedding vs portrait wording)" "$(echo "$lp" | grep -q 'Your Special Day' && echo "$lp2" | grep -q 'Your Portrait Session' && echo 1)" "event wording missing"
 home=$(curl -s "$BASE/")
 check "7q. Home page has og:title, absolute og:image, twitter:card" "$(echo "$home" | grep -q 'property="og:title"' && echo "$home" | grep -q 'property="og:image" content="https://' && echo "$home" | grep -q 'name="twitter:card" content="summary_large_image"' && echo 1)" "missing tags"
 

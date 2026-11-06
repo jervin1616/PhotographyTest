@@ -3,6 +3,7 @@
 // never into the public dist/ that Cloudflare serves as static assets.
 import Base from '../../layouts/Base.astro';
 import Gallery from '../../components/Gallery.astro';
+import events from '../../data/events.json';
 
 export function getStaticPaths() {
   if (process.env.PRIVATE_BUILD !== '1') return []; // public build emits nothing here
@@ -14,12 +15,14 @@ export function getStaticPaths() {
 }
 const { client } = Astro.params;
 const { data } = Astro.props;
+const ev = (events as Record<string, any>)[data.event] ?? events.generic;
+const evKey = (events as Record<string, any>)[data.event] ? data.event : 'generic';
 ---
-<Base title={data.title} noindex ogImage="/og-gallery.jpg" description="Private client gallery">
+<Base title={data.title} noindex ogImage={`/og-gallery-${evKey}.jpg`} description={ev.ogDescription}>
   <section class="mx-auto max-w-6xl px-5 pt-12 pb-8 flex flex-wrap items-end justify-between gap-4">
     <div>
-      <p class="uppercase tracking-[.3em] text-xs text-seaglass">Private gallery</p>
-      <h1 class="mt-2 text-4xl sm:text-5xl">{data.title}</h1>
+      <p class="font-script text-4xl sm:text-5xl leading-none text-seaglass">{ev.heading}</p>
+      <h1 class="mt-3 text-4xl sm:text-5xl">{data.title}</h1>
       {data.subtitle && <p class="mt-2 text-mist">{data.subtitle}</p>}
       <p class="mt-2 text-sm text-mist">Proof images are watermarked. Select a photo to open it full size.</p>
     </div>

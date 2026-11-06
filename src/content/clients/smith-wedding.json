@@ -1,6 +1,7 @@
 {
   "title": "The Smith Wedding",
-  "subtitle": "Coastal ceremony · proofs",
+  "subtitle": "Coastal ceremony \u00b7 proofs",
+  "event": "wedding",
   "password": {
     "algo": "PBKDF2-SHA256",
     "iterations": 100000,

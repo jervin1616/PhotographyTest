@@ -1,6 +1,7 @@
 {
   "title": "Peters Street Photography",
-  "subtitle": "City scenes · proofs",
+  "subtitle": "City scenes \u00b7 proofs",
+  "event": "street",
   "password": {
     "algo": "PBKDF2-SHA256",
     "iterations": 100000,

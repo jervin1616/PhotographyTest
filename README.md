@@ -61,6 +61,11 @@ Every page has Open Graph / Twitter-card tags, so a shared link shows a title, d
   client photo**: preview images must be public so messaging apps can fetch them.
 - The locked gallery URL returns **200 with only the login form** (not 401), because link-preview bots
   ignore error pages. No gallery content is served without the cookie; the tests check this.
+- Each client has an `event` field (`wedding`, `portrait`, `street`, `generic`) in its data file. It picks the
+  script heading, message, backdrop photo and preview card from `src/data/events.json`, on both the login page
+  and the gallery header. **Trade-off:** the login page reveals the *event type* (not names) to anyone who
+  guesses a valid link. To add a new event type, add an entry to `events.json`, run `node scripts/make-og.mjs`,
+  and redeploy. Adding a client of an existing type needs no code.
 - Regenerate the cards after a rebrand with `node scripts/make-og.mjs`. Absolute URLs come from `site` in
   `astro.config.mjs` (change it if you add a custom domain).
 - Some apps cache previews for days. Use a card validator, or add `?v=2` to the link, to refresh.
@@ -88,6 +93,7 @@ No new code is needed. Example: slug `jones-family`.
    {
      "title": "The Jones Family",
      "subtitle": "Spring session · proofs",
+     "event": "wedding",
      "password": {},
      "images": [
        { "file": "img-0001.jpg", "size": "hero" },

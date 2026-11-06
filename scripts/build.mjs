@@ -28,7 +28,7 @@ for (const f of fs.readdirSync(clientsDir).filter((f) => f.endsWith('.json') && 
   const out = path.join('private-out', 'clients', slug);
   fs.mkdirSync(path.join(out, 'img'), { recursive: true });
   fs.copyFileSync(path.join('private-dist', 'clients', slug, 'index.html'), path.join(out, 'page.html'));
-  fs.writeFileSync(path.join(out, 'meta.json'), JSON.stringify({ title: data.title, iterations: p.iterations, salt: p.salt, hash: p.hash }));
+  fs.writeFileSync(path.join(out, 'meta.json'), JSON.stringify({ title: data.title, event: data.event || 'generic', iterations: p.iterations, salt: p.salt, hash: p.hash }));
   for (const img of data.images) {
     for (const name of [img.file, img.file.replace(/\.jpg$/i, '-600.jpg')]) {
       const src = path.join('processed', 'clients', slug, name);
