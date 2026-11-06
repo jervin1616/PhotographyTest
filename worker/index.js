@@ -195,13 +195,14 @@ function loginPage(slug, message, status) {
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>Client gallery · Saltmarsh Photo Co.</title>
 <style>
-body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f4ede1;color:#10263d;font:16px/1.5 Inter,system-ui,sans-serif}
-main{width:min(92vw,26rem);padding:2rem;background:#fff9;border:1px solid #e8dcc8}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b1620;color:#ece4d6;font:16px/1.5 Inter,system-ui,sans-serif;color-scheme:dark}
+main{width:min(92vw,26rem);padding:2rem;background:#142231;border:1px solid #26384a}
 h1{font:400 1.9rem/1.1 "Iowan Old Style",Palatino,Georgia,serif;margin:0 0 .5rem}
-p{margin:.25rem 0 1rem;color:#5e5144}label{display:block;font-size:.85rem;margin-bottom:.35rem}
-input{width:100%;box-sizing:border-box;padding:.75rem 1rem;border:1px solid #8b7a6899;background:#fff;font:inherit}
-button{margin-top:1rem;width:100%;padding:.8rem;background:#10263d;color:#f4ede1;border:0;font:inherit;cursor:pointer}
-button:hover{background:#3a6f61}.err{color:#8a1c1c;margin-top:.75rem}a{color:inherit}
+p{margin:.25rem 0 1rem;color:#a9b4bb}label{display:block;font-size:.85rem;margin-bottom:.35rem}
+input{width:100%;box-sizing:border-box;padding:.75rem 1rem;border:1px solid #3b5064;background:#0b1620;color:#ece4d6;font:inherit}
+input:focus{outline:2px solid #9fc9bd;outline-offset:1px}
+button{margin-top:1rem;width:100%;padding:.8rem;background:#ece4d6;color:#0b1620;border:0;font:inherit;cursor:pointer}
+button:hover{background:#9fc9bd}.err{color:#fca5a5;margin-top:.75rem}a{color:inherit}
 </style></head><body><main>
 <h1>Private gallery</h1><p>Enter the password we sent you to view this gallery.</p>
 <form method="post" action="/clients/${esc(slug)}">

@@ -1,0 +1,14 @@
+{
+  "weddings-01":   { "title": "Black Sand Vows" },
+  "weddings-02":   { "title": "Salt Air Kiss" },
+  "weddings-03":   { "title": "The Long Walk" },
+  "weddings-04":   { "title": "Sunset Veil" },
+  "portraits-01":  { "title": "Quiet Shoreline" },
+  "portraits-02":  { "title": "Orange Hour" },
+  "portraits-03":  { "title": "Golden Stand" },
+  "portraits-04":  { "title": "Wind and Water" },
+  "landscapes-01": { "title": "First Light on the Pier" },
+  "landscapes-02": { "title": "The Long Pier" },
+  "landscapes-03": { "title": "Dune Light" },
+  "landscapes-04": { "title": "Marsh Gold" }
+}

@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  --color-sand: #f4ede1;
-  --color-sand-deep: #e8dcc8;
-  --color-driftwood: #8b7a68;
-  --color-driftwood-dark: #5e5144;
-  --color-seaglass: #9fc9bd;
-  --color-seaglass-dark: #3a6f61;
-  --color-navy: #10263d;
+  --color-ink: #0b1620;      /* page background */
+  --color-ink-2: #142231;    /* raised panels, image placeholders */
+  --color-line: #26384a;     /* hairlines */
+  --color-line2: #3b5064;    /* form-control borders */
+  --color-paper: #ece4d6;    /* main text */
+  --color-mist: #a9b4bb;     /* secondary text */
+  --color-seaglass: #9fc9bd; /* accent */
   --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-html { scroll-behavior: smooth; }
-body { background: var(--color-sand); color: var(--color-navy); font-family: var(--font-sans); }
+html { scroll-behavior: smooth; color-scheme: dark; }
+body { background: var(--color-ink); color: var(--color-paper); font-family: var(--font-sans); }
 h1, h2, h3 { font-family: var(--font-serif); letter-spacing: -0.01em; }
 
 /* subtle fade-in on scroll (progressive: content is visible without JS) */
@@ -22,3 +22,20 @@ h1, h2, h3 { font-family: var(--font-serif); letter-spacing: -0.01em; }
 @media (prefers-reduced-motion: reduce) {
   .js .reveal { opacity: 1; transform: none; transition: none; }
 }
+
+/* hover caption on photos: fades up on hover / keyboard focus, always visible on touch screens */
+.cap {
+  position: absolute; inset: auto 0 0 0; display: flex; flex-direction: column; gap: .15rem;
+  padding: 3rem 1rem 1rem;
+  background: linear-gradient(to top, rgba(11,22,32,.94), rgba(11,22,32,.6) 55%, transparent);
+  opacity: 0; transform: translateY(10px); transition: opacity .35s ease, transform .35s ease;
+  pointer-events: none;
+}
+.cap-eyebrow { font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--color-seaglass); }
+.cap-title { font-family: var(--font-serif); font-size: 1.2rem; line-height: 1.15; color: var(--color-paper); }
+.cap-credit { font-size: .72rem; color: var(--color-mist); }
+.has-cap:hover .cap, .has-cap:focus-visible .cap { opacity: 1; transform: none; }
+.has-cap:hover img { filter: brightness(.82); }
+.has-cap img { transition: transform .7s ease, filter .35s ease; }
+@media (hover: none) { .cap { opacity: 1; transform: none; padding-top: 2rem; } .cap-credit { display: none; } .cap-title { font-size: 1rem; } }
+@media (prefers-reduced-motion: reduce) { .cap, .has-cap img { transition: none; } }

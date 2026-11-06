@@ -8,11 +8,11 @@ const spans: Record<string, string> = { 'weddings-01': '', 'landscapes-01': 'md:
 <Base title="Portfolio" description="Weddings, portraits and landscapes from the coast.">
   <section class="mx-auto max-w-6xl px-5 pt-14">
     <h1 class="text-4xl sm:text-5xl">Portfolio</h1>
-    <p class="mt-3 text-driftwood-dark max-w-xl">A selection of recent work. Filter by the kind of session you are curious about.</p>
+    <p class="mt-3 text-mist max-w-xl">A selection of recent work. Filter by the kind of session you are curious about.</p>
     <div class="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filter portfolio">
       {cats.map(([key, label]) => (
         <button type="button" data-filter={key} aria-pressed={key === 'all'}
-          class="filter px-4 py-2 text-sm border border-driftwood/50 aria-pressed:bg-navy aria-pressed:text-sand aria-pressed:border-navy hover:border-navy transition-colors">{label}</button>
+          class="filter px-4 py-2 text-sm border border-line2 aria-pressed:bg-paper aria-pressed:text-ink aria-pressed:border-paper hover:border-paper transition-colors">{label}</button>
       ))}
     </div>
   </section>
@@ -20,7 +20,7 @@ const spans: Record<string, string> = { 'weddings-01': '', 'landscapes-01': 'md:
   <section class="mx-auto max-w-6xl px-5 mt-8">
     <ul id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 grid-flow-dense">
       {portfolio.map((p, i) => (
-        <li data-cat={p.category} class:list={['reveal overflow-hidden bg-sand-deep', spans[p.id]]}>
+        <li data-cat={p.category} class:list={['reveal overflow-hidden bg-ink-2', spans[p.id]]}>
           <figure class="h-full">
             <img src={`/photos/portfolio/${p.id}-600.jpg`}
               srcset={`/photos/portfolio/${p.id}-600.jpg 600w, /photos/portfolio/${p.id}-1200.jpg 1200w, /photos/portfolio/${p.id}-1800.jpg 1800w`}
@@ -32,7 +32,7 @@ const spans: Record<string, string> = { 'weddings-01': '', 'landscapes-01': 'md:
         </li>
       ))}
     </ul>
-    <p id="empty" hidden class="py-16 text-center text-driftwood-dark">Nothing here yet.</p>
+    <p id="empty" hidden class="py-16 text-center text-mist">Nothing here yet.</p>
   </section>
   <div class="h-8"></div>
 

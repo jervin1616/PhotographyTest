@@ -18,13 +18,13 @@ const { data } = Astro.props;
 <Base title={data.title} noindex>
   <section class="mx-auto max-w-6xl px-5 pt-12 pb-8 flex flex-wrap items-end justify-between gap-4">
     <div>
-      <p class="uppercase tracking-[.3em] text-xs text-seaglass-dark">Private gallery</p>
+      <p class="uppercase tracking-[.3em] text-xs text-seaglass">Private gallery</p>
       <h1 class="mt-2 text-4xl sm:text-5xl">{data.title}</h1>
-      {data.subtitle && <p class="mt-2 text-driftwood-dark">{data.subtitle}</p>}
-      <p class="mt-2 text-sm text-driftwood-dark">Proof images are watermarked. Select a photo to open it full size.</p>
+      {data.subtitle && <p class="mt-2 text-mist">{data.subtitle}</p>}
+      <p class="mt-2 text-sm text-mist">Proof images are watermarked. Select a photo to open it full size.</p>
     </div>
     <form method="post" action={`/clients/${client}/logout`}>
-      <button class="border border-driftwood/60 px-4 py-2 text-sm hover:border-navy">Log out</button>
+      <button class="border border-line2 px-4 py-2 text-sm hover:border-paper">Log out</button>
     </form>
   </section>
   <Gallery slug={client!} images={data.images} />
