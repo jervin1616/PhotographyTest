@@ -1,0 +1,84 @@
+---
+import Base from '../layouts/Base.astro';
+// ONE place to change the form endpoint. This is a placeholder: see README ("Contact form").
+const FORM_ENDPOINT = 'https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID';
+---
+<Base title="Contact" description="Book a session with Saltmarsh Photo Co.">
+  <section class="mx-auto max-w-2xl px-5 pt-14">
+    <h1 class="text-4xl sm:text-5xl">Say hello</h1>
+    <p class="mt-3 text-driftwood-dark">Tell us what you have in mind. We reply within a couple of days.</p>
+    <p class="mt-4 bg-sand-deep px-4 py-3 text-sm text-driftwood-dark" role="note">
+      Demo notice: this form is not connected to a real inbox. Nothing you type here is stored or sent to a person.
+    </p>
+
+    <form id="contact-form" method="post" action={FORM_ENDPOINT} novalidate class="mt-8 space-y-6">
+      <div>
+        <label for="name" class="block text-sm font-medium">Name</label>
+        <input id="name" name="name" type="text" required autocomplete="name" minlength="2"
+          class="mt-2 w-full border border-driftwood/60 bg-white/70 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-seaglass-dark" />
+        <p class="err mt-1 text-sm text-red-800" data-for="name" hidden></p>
+      </div>
+      <div>
+        <label for="email" class="block text-sm font-medium">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="email"
+          class="mt-2 w-full border border-driftwood/60 bg-white/70 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-seaglass-dark" />
+        <p class="err mt-1 text-sm text-red-800" data-for="email" hidden></p>
+      </div>
+      <div>
+        <label for="session" class="block text-sm font-medium">Session type</label>
+        <select id="session" name="session" required
+          class="mt-2 w-full border border-driftwood/60 bg-white/70 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-seaglass-dark">
+          <option value="">Choose one…</option>
+          <option>Wedding</option>
+          <option>Portrait</option>
+          <option>Landscape / print</option>
+          <option>Something else</option>
+        </select>
+        <p class="err mt-1 text-sm text-red-800" data-for="session" hidden></p>
+      </div>
+      <div>
+        <label for="message" class="block text-sm font-medium">Message</label>
+        <textarea id="message" name="message" rows="5" required minlength="10"
+          class="mt-2 w-full border border-driftwood/60 bg-white/70 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-seaglass-dark"></textarea>
+        <p class="err mt-1 text-sm text-red-800" data-for="message" hidden></p>
+      </div>
+      <!-- honeypot: hidden from people, bots tend to fill it in -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">
+        <label>Leave this empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <button type="submit" class="bg-navy text-sand px-8 py-3 text-sm tracking-wide hover:bg-seaglass-dark transition-colors">Send message</button>
+      <p id="status" role="status" class="text-sm"></p>
+    </form>
+  </section>
+  <div class="h-8"></div>
+
+  <script is:inline>
+    (function () {
+      var form = document.getElementById('contact-form');
+      var status = document.getElementById('status');
+      function setErr(name, msg) {
+        var p = form.querySelector('.err[data-for="' + name + '"]');
+        p.textContent = msg || ''; p.hidden = !msg;
+      }
+      function validate() {
+        var ok = true, v = function (n) { return form.elements[n].value.trim(); };
+        setErr('name', v('name').length < 2 ? 'Please enter your name.' : ''); if (v('name').length < 2) ok = false;
+        var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email'));
+        setErr('email', emailOk ? '' : 'Please enter a valid email address.'); if (!emailOk) ok = false;
+        setErr('session', v('session') ? '' : 'Please choose a session type.'); if (!v('session')) ok = false;
+        setErr('message', v('message').length < 10 ? 'Please write at least a sentence.' : ''); if (v('message').length < 10) ok = false;
+        return ok;
+      }
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        status.textContent = '';
+        if (!validate()) return;
+        if (form.elements['_gotcha'].value) { status.textContent = 'Thanks! We will be in touch.'; form.reset(); return; } // bot: pretend success
+        status.textContent = 'Sending…';
+        fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
+          .then(function (r) { if (!r.ok) throw new Error(); status.textContent = 'Thanks! We will be in touch.'; form.reset(); })
+          .catch(function () { status.textContent = 'Demo form: the endpoint is a placeholder, so nothing was sent. See the README to connect a real one.'; });
+      });
+    })();
+  </script>
+</Base>

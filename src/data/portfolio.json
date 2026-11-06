@@ -1,0 +1,98 @@
+[
+  {
+    "id": "weddings-01",
+    "category": "weddings",
+    "width": 1800,
+    "height": 2700,
+    "alt": "a bride and groom walking on the beach",
+    "photographer": "Asdrubal luna"
+  },
+  {
+    "id": "portraits-01",
+    "category": "portraits",
+    "width": 1800,
+    "height": 2520,
+    "alt": "a woman on a beach",
+    "photographer": "Kyle Nieber"
+  },
+  {
+    "id": "landscapes-01",
+    "category": "landscapes",
+    "width": 1800,
+    "height": 1201,
+    "alt": "Sunrise over a calm ocean with a pier",
+    "photographer": "Richard Fox"
+  },
+  {
+    "id": "weddings-02",
+    "category": "weddings",
+    "width": 1800,
+    "height": 1188,
+    "alt": "bride and groom kissing on beach during daytime",
+    "photographer": "Osarugue Igbinoba"
+  },
+  {
+    "id": "portraits-02",
+    "category": "portraits",
+    "width": 1800,
+    "height": 2250,
+    "alt": "a woman in an orange dress posing for a picture",
+    "photographer": "Pooria Shahriari"
+  },
+  {
+    "id": "landscapes-02",
+    "category": "landscapes",
+    "width": 1800,
+    "height": 1200,
+    "alt": "Long wooden pier stretching into the ocean at sunrise",
+    "photographer": "Wojciech Wyszkowski"
+  },
+  {
+    "id": "weddings-03",
+    "category": "weddings",
+    "width": 1800,
+    "height": 1324,
+    "alt": "bride and groom walking on beach during daytime",
+    "photographer": "Asdrubal luna"
+  },
+  {
+    "id": "portraits-03",
+    "category": "portraits",
+    "width": 1800,
+    "height": 2250,
+    "alt": "a woman standing on a beach at sunset",
+    "photographer": "Pooria Shahriari"
+  },
+  {
+    "id": "landscapes-03",
+    "category": "landscapes",
+    "width": 1800,
+    "height": 1200,
+    "alt": "Sandy dunes with sparse grass under a cloudy sky",
+    "photographer": "Peter Hoogmoed"
+  },
+  {
+    "id": "weddings-04",
+    "category": "weddings",
+    "width": 1800,
+    "height": 1193,
+    "alt": "man and woman kissing on beach during sunset",
+    "photographer": "Graphe Tween"
+  },
+  {
+    "id": "portraits-04",
+    "category": "portraits",
+    "width": 1800,
+    "height": 1200,
+    "alt": "a woman standing on a beach next to the ocean",
+    "photographer": "Joshua Rawson-Harris"
+  },
+  {
+    "id": "landscapes-04",
+    "category": "landscapes",
+    "width": 1800,
+    "height": 1195,
+    "alt": "Golden marsh grasses border a calm blue river",
+    "photographer": "Michael Xi"
+  }
+]

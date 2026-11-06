@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import portfolio from '../data/portfolio.json';
+const cats = [['all', 'All'], ['weddings', 'Weddings'], ['portraits', 'Portraits'], ['landscapes', 'Landscapes']];
+// mixed grid: a few items span wider on larger screens
+const spans: Record<string, string> = { 'weddings-01': '', 'landscapes-01': 'md:col-span-2', 'portraits-02': '', 'landscapes-02': 'md:col-span-2' };
+---
+<Base title="Portfolio" description="Weddings, portraits and landscapes from the coast.">
+  <section class="mx-auto max-w-6xl px-5 pt-14">
+    <h1 class="text-4xl sm:text-5xl">Portfolio</h1>
+    <p class="mt-3 text-driftwood-dark max-w-xl">A selection of recent work. Filter by the kind of session you are curious about.</p>
+    <div class="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filter portfolio">
+      {cats.map(([key, label]) => (
+        <button type="button" data-filter={key} aria-pressed={key === 'all'}
+          class="filter px-4 py-2 text-sm border border-driftwood/50 aria-pressed:bg-navy aria-pressed:text-sand aria-pressed:border-navy hover:border-navy transition-colors">{label}</button>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 mt-8">
+    <ul id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 grid-flow-dense">
+      {portfolio.map((p, i) => (
+        <li data-cat={p.category} class:list={['reveal overflow-hidden bg-sand-deep', spans[p.id]]}>
+          <figure class="h-full">
+            <img src={`/photos/portfolio/${p.id}-600.jpg`}
+              srcset={`/photos/portfolio/${p.id}-600.jpg 600w, /photos/portfolio/${p.id}-1200.jpg 1200w, /photos/portfolio/${p.id}-1800.jpg 1800w`}
+              sizes={spans[p.id] ? '(min-width:768px) 66vw, 100vw' : '(min-width:768px) 33vw, 50vw'}
+              width={p.width} height={p.height} alt={p.alt}
+              loading={i < 2 ? 'eager' : 'lazy'} decoding="async"
+              class="h-full w-full object-cover aspect-[4/5] md:aspect-auto" style={spans[p.id] ? 'aspect-ratio:16/10' : undefined} />
+          </figure>
+        </li>
+      ))}
+    </ul>
+    <p id="empty" hidden class="py-16 text-center text-driftwood-dark">Nothing here yet.</p>
+  </section>
+  <div class="h-8"></div>
+
+  <script is:inline>
+    (function () {
+      var buttons = document.querySelectorAll('.filter');
+      var items = document.querySelectorAll('#grid > li');
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () {
+          var f = b.getAttribute('data-filter');
+          buttons.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          items.forEach(function (li) { li.hidden = !(f === 'all' || li.getAttribute('data-cat') === f); });
+        });
+      });
+    })();
+  </script>
+</Base>

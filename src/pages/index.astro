@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import portfolio from '../data/portfolio.json';
+const featured = ['weddings-01', 'portraits-02', 'landscapes-03', 'weddings-04']
+  .map((id) => portfolio.find((p) => p.id === id)!);
+---
+<Base title="Home">
+  <section class="relative h-[78svh] min-h-[420px] text-sand">
+    <img src="/photos/portfolio/landscapes-01-1800.jpg"
+      srcset="/photos/portfolio/landscapes-01-600.jpg 600w, /photos/portfolio/landscapes-01-1200.jpg 1200w, /photos/portfolio/landscapes-01-1800.jpg 1800w"
+      sizes="100vw" width="1800" height="1200" alt="A pier reaching into a calm sea at sunrise"
+      class="absolute inset-0 h-full w-full object-cover" fetchpriority="high" decoding="async" />
+    <div class="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/20 to-transparent"></div>
+    <div class="relative h-full mx-auto max-w-6xl px-5 flex flex-col justify-end pb-14 sm:pb-20">
+      <p class="uppercase tracking-[.3em] text-xs text-seaglass">Coastal photography</p>
+      <h1 class="mt-3 text-4xl sm:text-6xl max-w-2xl leading-[1.05]">Light, salt air, and the moments in between.</h1>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/portfolio/" class="bg-sand text-navy px-6 py-3 text-sm tracking-wide hover:bg-seaglass transition-colors">View portfolio</a>
+        <a href="/contact/" class="border border-sand/70 px-6 py-3 text-sm tracking-wide hover:bg-sand/10 transition-colors">Book a session</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-3xl px-5 py-20 text-center reveal">
+    <h2 class="text-3xl sm:text-4xl">Unhurried, honest, a little salty.</h2>
+    <p class="mt-6 text-lg leading-relaxed text-driftwood-dark">
+      Saltmarsh Photo Co. photographs weddings, portraits and the wild edge of the coast. We work with the tide and the weather,
+      not against them, and deliver galleries you will want to print.
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5">
+    <div class="flex items-end justify-between reveal">
+      <h2 class="text-3xl">Featured work</h2>
+      <a href="/portfolio/" class="text-sm underline decoration-seaglass-dark underline-offset-4 hover:text-seaglass-dark">See all</a>
+    </div>
+    <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      {featured.map((p) => (
+        <a href="/portfolio/" class="reveal group block overflow-hidden bg-sand-deep">
+          <img src={`/photos/portfolio/${p.id}-600.jpg`}
+            srcset={`/photos/portfolio/${p.id}-600.jpg 600w, /photos/portfolio/${p.id}-1200.jpg 1200w`}
+            sizes="(min-width:768px) 25vw, 50vw"
+            width={p.width} height={p.height} alt={p.alt} loading="lazy" decoding="async"
+            class="aspect-[3/4] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 mt-24">
+    <div class="bg-sand-deep px-6 py-12 sm:px-12 grid gap-6 sm:grid-cols-[1fr_auto] items-center reveal">
+      <div>
+        <h2 class="text-2xl sm:text-3xl">Already a client?</h2>
+        <p class="mt-2 text-driftwood-dark">Your private gallery is protected by a password we send you after your session.</p>
+      </div>
+      <a href="/client-login/" class="bg-navy text-sand px-6 py-3 text-sm tracking-wide text-center hover:bg-seaglass-dark transition-colors">Client login</a>
+    </div>
+  </section>
+</Base>

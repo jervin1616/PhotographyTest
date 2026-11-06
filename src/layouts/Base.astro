@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+interface Props { title: string; description?: string; noindex?: boolean }
+const { title, description = 'Saltmarsh Photo Co. — coastal weddings, portraits and landscapes. A fictional demo studio.', noindex = false } = Astro.props;
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/portfolio/', label: 'Portfolio' },
+  { href: '/about/', label: 'About' },
+  { href: '/contact/', label: 'Contact' },
+];
+const path = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title === 'Home' ? 'Saltmarsh Photo Co.' : `${title} · Saltmarsh Photo Co.`}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#10263d" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2310263d'/%3E%3Cpath d='M4 20c4-4 6 4 12 0s8 4 12 0' stroke='%239fc9bd' stroke-width='2.5' fill='none'/%3E%3C/svg%3E" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <div class="bg-navy text-sand text-xs sm:text-sm text-center px-4 py-2 leading-snug">
+      Demo site. Photos from Unsplash. Client gallery passwords are listed on the <a class="underline decoration-seaglass underline-offset-2 hover:text-seaglass" href="/client-login/">Client Login</a> page for demo purposes only.
+    </div>
+    <header class="sticky top-0 z-30 bg-sand/90 backdrop-blur border-b border-sand-deep">
+      <div class="mx-auto max-w-6xl px-5 py-4 flex items-center justify-between">
+        <a href="/" class="font-serif text-xl tracking-wide">Saltmarsh <span class="text-seaglass-dark">Photo Co.</span></a>
+        <nav aria-label="Main">
+          <ul class="flex gap-5 sm:gap-8 text-sm">
+            {nav.map((n) => (
+              <li><a href={n.href} aria-current={path === n.href ? 'page' : undefined}
+                class:list={['py-2 border-b-2 border-transparent hover:border-seaglass-dark transition-colors', path === n.href && 'border-seaglass-dark']}>{n.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="flex-1"><slot /></main>
+    <footer class="bg-navy text-sand mt-24">
+      <div class="mx-auto max-w-6xl px-5 py-12 grid gap-8 sm:grid-cols-3 text-sm">
+        <div>
+          <p class="font-serif text-xl">Saltmarsh Photo Co.</p>
+          <p class="mt-2 text-sand/70">A fictional coastal photography studio. Built as a demo.</p>
+        </div>
+        <ul class="space-y-2">
+          <li><a class="hover:text-seaglass" href="/portfolio/">Portfolio</a></li>
+          <li><a class="hover:text-seaglass" href="/about/">About</a></li>
+          <li><a class="hover:text-seaglass" href="/contact/">Contact</a></li>
+          <li><a class="hover:text-seaglass" href="/client-login/">Client Login</a></li>
+        </ul>
+        <p class="text-sand/70">
+          Photos by various photographers on <a class="underline hover:text-seaglass" href="https://unsplash.com/?utm_source=saltmarsh_photo_demo&utm_medium=referral">Unsplash</a>.
+          {" "}<a class="underline hover:text-seaglass" href="/about/#credits">Full photo credits</a>.
+        </p>
+      </div>
+    </footer>
+    <script is:inline>
+      (function () {
+        var els = document.querySelectorAll('.reveal');
+        if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); return; }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { rootMargin: '0px 0px -8% 0px' });
+        els.forEach(function (e) { io.observe(e); });
+      })();
+    </script>
+  </body>
+</html>

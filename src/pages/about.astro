@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import credits from '../data/credits.json';
+---
+<Base title="About" description="About Saltmarsh Photo Co., a fictional coastal photography studio.">
+  <section class="mx-auto max-w-6xl px-5 pt-14 grid gap-12 md:grid-cols-2 items-center">
+    <div class="reveal">
+      <h1 class="text-4xl sm:text-5xl">About the studio</h1>
+      <div class="mt-6 space-y-4 text-lg leading-relaxed text-driftwood-dark">
+        <p>Saltmarsh Photo Co. is a small, fictional studio built around one idea: the coast looks best when nobody is hurrying it.</p>
+        <p>We shoot weddings on the shoreline, portraits in the dunes, and landscapes at the edges of the day, when the light is soft and the beach is empty.</p>
+        <p>Every session ends in a private online gallery, so you can look through your photographs in your own time.</p>
+      </div>
+      <a href="/contact/" class="mt-8 inline-block bg-navy text-sand px-6 py-3 text-sm tracking-wide hover:bg-seaglass-dark transition-colors">Get in touch</a>
+    </div>
+    <img src="/photos/portfolio/landscapes-04-1200.jpg" srcset="/photos/portfolio/landscapes-04-600.jpg 600w, /photos/portfolio/landscapes-04-1200.jpg 1200w"
+      sizes="(min-width:768px) 50vw, 100vw" width="1200" height="797" alt="Golden marsh grasses beside a calm blue river" loading="lazy" decoding="async"
+      class="w-full h-auto reveal" />
+  </section>
+
+  <section id="credits" class="mx-auto max-w-6xl px-5 mt-24 reveal">
+    <h2 class="text-3xl">Photo credits</h2>
+    <p class="mt-3 text-driftwood-dark max-w-2xl">
+      This is a demo site. Every photograph comes from <a class="underline" href="https://unsplash.com/?utm_source=saltmarsh_photo_demo&utm_medium=referral">Unsplash</a>
+      and belongs to its photographer. Thank you to all of them.
+    </p>
+    <details class="mt-6">
+      <summary class="cursor-pointer text-sm underline underline-offset-4">Show all {credits.length} credits</summary>
+      <ul class="mt-4 grid gap-x-8 gap-y-1 sm:grid-cols-2 text-sm text-driftwood-dark">
+        {credits.map((c) => (
+          <li>
+            <a class="underline" href={c.photoUrl} rel="noopener">Photo</a> by
+            <a class="underline" href={c.photographerUrl} rel="noopener">{c.photographer}</a>
+            on Unsplash
+          </li>
+        ))}
+      </ul>
+    </details>
+  </section>
+</Base>
