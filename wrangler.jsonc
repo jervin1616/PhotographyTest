@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "saltmarsh-photo",
+  "name": "saltmarsh-photo-co",
   "main": "worker/index.js",
   "compatibility_date": "2026-11-01",
 
