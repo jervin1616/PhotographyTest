@@ -151,6 +151,9 @@ npx wrangler dev --local       # http://localhost:8787
 - **Proofs are watermarked, not DRM.** Anyone who can view a proof can screenshot it.
 - **Free-tier limits:** Workers Free allows 100,000 requests/day and about 10 ms CPU per request; R2 has a
   free monthly allowance. A busy gallery can exceed them.
+- **Cloudflare's API throttles bursts.** Uploading many objects quickly can return `429 Too Many Requests`.
+  The upload script pauses between files and retries with back-off, then stops with a clear list of what is
+  missing; re-run the same command.
 - **Uploads are manual.** `npm run upload:remote` runs from a computer logged in to Cloudflare. Uploading
   does not delete old objects. If you remove an image from a gallery, delete its object in R2 as well.
 - **Deploying from the build sandbox used for this project failed** at Wrangler's asset-upload step (401),

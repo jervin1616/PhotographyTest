@@ -1,0 +1,32 @@
+{
+  "title": "Peters Street Photography",
+  "subtitle": "City scenes · proofs",
+  "password": {
+    "algo": "PBKDF2-SHA256",
+    "iterations": 100000,
+    "salt": "36b9376a11ddccf41f4553510b02faac",
+    "hash": "24b32540eaa58682d55da3ab974822fb57b5e5f7c004a5516eeba636ae434ed7"
+  },
+  "images": [
+    {
+      "file": "001.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "002.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "003.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "004.jpg",
+      "size": "half"
+    },
+    {
+      "file": "005.jpg",
+      "size": "half"
+    }
+  ]
+}
