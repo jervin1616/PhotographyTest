@@ -13,7 +13,7 @@ login(){ curl -s -i -X POST --data-urlencode "password=$2" "$BASE/clients/$1"; }
 echo "Testing client '$SLUG' on $BASE"; echo "----------------------------------------------"
 
 r=$(curl -s -i "$BASE/clients/$SLUG"); c=$(echo "$r" | status); leak=$(echo "$r" | grep -c -E 'class="gallery"|/img/00')
-check "1. Gallery page without cookie is NOT served" "$([ "$c" = 401 ] && [ "$leak" = 0 ] && echo 1)" "status=$c leak=$leak"
+check "1. Locked URL serves only the login form, no gallery content" "$([ "$c" = 200 ] && [ "$leak" = 0 ] && echo "$r" | grep -q 'name="password"' && echo 1)" "status=$c leak=$leak"
 c=$(code "$BASE/clients/$SLUG/img/001.jpg"); check "2. Direct image without cookie blocked" "$([ "$c" = 401 ] && echo 1)" "status=$c"
 r=$(login "$SLUG" "definitely-wrong"); c=$(echo "$r" | status); sc=$(echo "$r" | grep -ic '^set-cookie:')
 check "3. Wrong password rejected (401, no cookie)" "$([ "$c" = 401 ] && [ "$sc" = 0 ] && echo 1)" "status=$c cookie=$sc"

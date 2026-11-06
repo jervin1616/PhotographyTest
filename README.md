@@ -53,6 +53,18 @@ For a plain-English tour of the Worker, read **[WORKER-EXPLAINED.md](WORKER-EXPL
   restrictive `Content-Security-Policy` on every protected response.
 - Login POSTs are checked with `Sec-Fetch-Site` against cross-site forms.
 
+## Link previews (text messages, social, chat apps)
+
+Every page has Open Graph / Twitter-card tags, so a shared link shows a title, description and image.
+- **Site pages** use `public/og.jpg` (pier at sunrise + wordmark).
+- **Client gallery links** use a generic padlock card, `public/og-gallery.jpg`. It is deliberately **never a
+  client photo**: preview images must be public so messaging apps can fetch them.
+- The locked gallery URL returns **200 with only the login form** (not 401), because link-preview bots
+  ignore error pages. No gallery content is served without the cookie; the tests check this.
+- Regenerate the cards after a rebrand with `node scripts/make-og.mjs`. Absolute URLs come from `site` in
+  `astro.config.mjs` (change it if you add a custom domain).
+- Some apps cache previews for days. Use a card validator, or add `?v=2` to the link, to refresh.
+
 ## Testing the protection
 
 ```bash

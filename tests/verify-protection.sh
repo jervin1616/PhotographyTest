@@ -13,6 +13,8 @@ check() { if [ "$2" = "1" ]; then ok "$1"; else bad "$1" "$3"; fi; }
 code()  { curl -s -o /dev/null -w '%{http_code}' "$@"; }
 login() { # slug password -> prints full response headers+body
   curl -s -i -X POST --data-urlencode "password=$2" "$BASE/clients/$1"; }
+# 1 if the URL (with the given Cookie header) serves ONLY the login form and no gallery content
+locked() { body=$(curl -s -H "Cookie: $2" "$1"); echo "$body" | grep -q 'name="password"' && ! echo "$body" | grep -qE 'class="gallery"|/img/00' && echo 1; }
 cookie_of() { grep -i '^set-cookie:' | head -1 | sed -E 's/^[Ss]et-[Cc]ookie: *//; s/;.*//' | tr -d '\r'; }
 
 echo "Testing: $BASE"
@@ -21,10 +23,10 @@ echo "---------------------------------------------------------------"
 # 1. gallery page without cookie is not served
 r=$(curl -s -i "$BASE/clients/$S"); c=$(echo "$r" | grep -E '^HTTP/' | tail -1 | awk '{print $2}')
 leak=$(echo "$r" | grep -c -E 'class="gallery"|/img/001')
-check "1. Gallery page without cookie is NOT served (smith)" "$([ "$c" = 401 ] && [ "$leak" = 0 ] && echo 1)" "status=$c gallery-markup-lines=$leak"
+check "1. Locked gallery URL serves only the login form, no gallery content (smith)" "$([ "$c" = 200 ] && [ "$leak" = 0 ] && echo "$r" | grep -q 'name="password"' && echo 1)" "status=$c gallery-markup-lines=$leak"
 r=$(curl -s -i "$BASE/clients/$P"); c=$(echo "$r" | grep -E '^HTTP/' | tail -1 | awk '{print $2}')
 leak=$(echo "$r" | grep -c -E 'class="gallery"|/img/001')
-check "1b. Gallery page without cookie is NOT served (portraits)" "$([ "$c" = 401 ] && [ "$leak" = 0 ] && echo 1)" "status=$c gallery-markup-lines=$leak"
+check "1b. Locked gallery URL serves only the login form, no gallery content (portraits)" "$([ "$c" = 200 ] && [ "$leak" = 0 ] && echo "$r" | grep -q 'name="password"' && echo 1)" "status=$c gallery-markup-lines=$leak"
 
 # 2. direct image URL without cookie is blocked (full-size and thumbnail)
 for f in 001.jpg 001-600.jpg; do
@@ -62,7 +64,7 @@ c2=$(code -H "Cookie: $SC" "$BASE/clients/$P")
 # also try the Smith cookie value under the Portraits cookie NAME (the signature covers the slug)
 val="${SC#*=}"; c3=$(code -H "Cookie: cg_$P=$val" "$BASE/clients/$P/img/001.jpg")
 check "6a. Smith cookie does NOT open Portraits image (status $c1)" "$([ "$c1" = 401 ] && echo 1)" "status=$c1"
-check "6b. Smith cookie does NOT open Portraits page (status $c2)" "$([ "$c2" = 401 ] && echo 1)" "status=$c2"
+check "6b. Smith cookie does NOT open Portraits page (login form only, status $c2)" "$(locked "$BASE/clients/$P" "$SC")" "gallery content served or no login form (status=$c2)"
 check "6c. Smith cookie VALUE re-labelled as a Portraits cookie rejected (status $c3)" "$([ "$c3" = 401 ] && echo 1)" "status=$c3"
 
 # 7. extra hardening checks
@@ -73,7 +75,7 @@ check "7c. Gallery HTML has a noindex meta tag" "$(echo "$h" | grep -qi 'name="r
 check "7d. 401 login page also sends X-Robots-Tag noindex" "$(curl -s -i "$BASE/clients/$S" | grep -i '^x-robots-tag:' | grep -qi noindex && echo 1)" "missing"
 check "7e. robots.txt disallows /clients/" "$(curl -s "$BASE/robots.txt" | grep -qi 'Disallow: /clients/' && echo 1)" "missing"
 check "7f. Forged cookie rejected" "$([ "$(code -H "Cookie: cg_$S=9999999999.AAAA" "$BASE/clients/$S/img/001.jpg")" = 401 ] && echo 1)" "accepted"
-check "7g. Expired/garbage cookie rejected" "$([ "$(code -H "Cookie: cg_$S=1.AAAA" "$BASE/clients/$S")" = 401 ] && echo 1)" "accepted"
+check "7g. Expired/garbage cookie rejected (login form only)" "$(locked "$BASE/clients/$S" "cg_$S=1.AAAA")" "accepted"
 check "7h. Private file names are NOT reachable as public static files" "$([ "$(code "$BASE/clients/$S/page.html")" != 200 ] && [ "$(code "$BASE/clients/$S/meta.json")" != 200 ] && [ "$(code "$BASE/clients/$S/index.html")" != 200 ] && echo 1)" "reachable"
 check "7i. /clients/ has no directory listing" "$([ "$(code "$BASE/clients/")" = 404 ] && echo 1)" "status=$(code "$BASE/clients/")"
 check "7j. Path traversal attempt does not leak (..%2f)" "$([ "$(code -H "Cookie: $SC" "$BASE/clients/$S/img/..%2f..%2f$P%2fmeta.json")" != 200 ] && echo 1)" "leaked"
@@ -85,6 +87,15 @@ c=$(code -X POST -H "Sec-Fetch-Site: cross-site" --data-urlencode "password=$SMI
 check "7m. Cross-site login POST refused (403)" "$([ "$c" = 403 ] && echo 1)" "status=$c"
 c=$(code -X POST -H "Origin: null" -H "Sec-Fetch-Site: same-origin" --data-urlencode "password=wrong" "$BASE/clients/$S")
 check "7n. Real-browser login POST (Origin: null, same-origin) is not blocked (401 wrong pw)" "$([ "$c" = 401 ] && echo 1)" "status=$c"
+
+# 7o-7q. link previews (text messages / social). Gallery previews must be generic: preview images are public.
+lp=$(curl -s "$BASE/clients/$S"); lp2=$(curl -s "$BASE/clients/$P")
+oi=$(echo "$lp" | grep -o 'property="og:image" content="[^"]*"' | sed 's/.*content="//; s/"$//'); oi2=$(echo "$lp2" | grep -o 'property="og:image" content="[^"]*"' | sed 's/.*content="//; s/"$//')
+ic=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$oi")
+check "7o. Gallery link has a preview image that loads without a cookie ($ic)" "$(echo "$oi" | grep -qE '^https?://.*og-gallery.jpg$' && echo "$ic" | grep -q '^200 image/jpeg' && echo 1)" "og:image=$oi $ic"
+check "7p. Gallery preview is the same generic card for every client (never a client photo)" "$([ -n "$oi" ] && [ "$oi" = "$oi2" ] && ! echo "$oi" | grep -q '/clients/' && echo 1)" "$oi vs $oi2"
+home=$(curl -s "$BASE/")
+check "7q. Home page has og:title, absolute og:image, twitter:card" "$(echo "$home" | grep -q 'property="og:title"' && echo "$home" | grep -q 'property="og:image" content="https://' && echo "$home" | grep -q 'name="twitter:card" content="summary_large_image"' && echo 1)" "missing tags"
 
 # 8. logout clears the cookie
 lo=$(curl -s -i -X POST -H "Cookie: $SC" "$BASE/clients/$S/logout")

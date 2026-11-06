@@ -46,7 +46,7 @@ export default {
 
     // ---- GET /clients/<slug>  (the gallery page, or the login form)
     if (rest === '' || rest === '/') {
-      if (!authed) return loginPage(slug, '', 401);
+      if (!authed) return loginPage(slug, '', 200, url.origin); // 200 (login form only): link-preview bots ignore error pages
       const page = await env.CLIENTS.get(`clients/${slug}/page.html`);
       if (!page) return text('Not found', 404);
       return secure(new Response(request.method === 'HEAD' ? null : page.body, {
@@ -72,15 +72,16 @@ export default {
 // ------------------------------------------------------------------ login
 
 async function handleLogin(request, env, slug) {
+  const origin = new URL(request.url).origin;
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
   // 1) per-IP attempt limit BEFORE doing any expensive work
   const { success } = await env.LOGIN_LIMITER.limit({ key: `${slug}:${ip}` });
-  if (!success) return loginPage(slug, 'Too many attempts. Please wait a minute and try again.', 429);
+  if (!success) return loginPage(slug, 'Too many attempts. Please wait a minute and try again.', 429, origin);
 
   let password = '';
   try {
     const len = Number(request.headers.get('content-length') || 0);
-    if (len > 2048) return loginPage(slug, 'Incorrect password.', 401);
+    if (len > 2048) return loginPage(slug, 'Incorrect password.', 401, origin);
     password = String((await request.formData()).get('password') || '').slice(0, 200);
   } catch { /* fall through: empty password fails below */ }
 
@@ -96,7 +97,7 @@ async function handleLogin(request, env, slug) {
 
   if (!ok) {
     await new Promise((r) => setTimeout(r, FAIL_DELAY_MS));
-    return loginPage(slug, 'Incorrect password.', 401); // same message for every failure
+    return loginPage(slug, 'Incorrect password.', 401, origin); // same message for every failure
   }
   return redirect(`/clients/${slug}`, [await makeCookie(env, slug)]);
 }
@@ -190,10 +191,15 @@ function sameOrigin(request, url) {
   return true;
 }
 
-function loginPage(slug, message, status) {
+function loginPage(slug, message, status, origin) {
   const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex, nofollow"><title>Client gallery · Saltmarsh Photo Co.</title>
+<meta name="robots" content="noindex, nofollow"><title>Private gallery · Saltmarsh Photo Co.</title>
+<meta property="og:type" content="website"><meta property="og:site_name" content="Saltmarsh Photo Co.">
+<meta property="og:title" content="Private gallery · Saltmarsh Photo Co."><meta property="og:description" content="Enter the password we sent you to view your photos.">
+<meta property="og:url" content="${esc(origin)}/clients/${esc(slug)}"><meta property="og:image" content="${esc(origin)}/og-gallery.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="A padlock: private client gallery">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Private gallery · Saltmarsh Photo Co."><meta name="twitter:image" content="${esc(origin)}/og-gallery.jpg">
 <style>
 body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b1620;color:#ece4d6;font:16px/1.5 Inter,system-ui,sans-serif;color-scheme:dark}
 main{width:min(92vw,26rem);padding:2rem;background:#142231;border:1px solid #26384a}
