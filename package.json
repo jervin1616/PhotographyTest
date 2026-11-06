@@ -5,15 +5,23 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/build.mjs",
     "preview": "astro preview",
-    "photos": "node scripts/fetch-photos.mjs",
-    "process": "node scripts/process-images.mjs"
+    "photos": "node scripts/search-photos.mjs && node scripts/fetch-photos.mjs",
+    "process": "node scripts/process-images.mjs",
+    "set-passwords": "node scripts/set-passwords.mjs",
+    "upload:local": "node scripts/upload-r2.mjs --local",
+    "upload:remote": "node scripts/upload-r2.mjs --remote",
+    "deploy": "npm run build && wrangler deploy",
+    "test": "bash tests/verify-protection.sh"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.4",
     "astro": "^7.4.7",
     "sharp": "^0.35.5",
     "tailwindcss": "^4.3.4"
+  },
+  "devDependencies": {
+    "wrangler": "^4.158.0"
   }
 }

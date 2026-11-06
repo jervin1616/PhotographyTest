@@ -1,0 +1,32 @@
+---
+// PRIVATE PAGE. Built only by `npm run build:private` (PRIVATE_BUILD=1) into private-dist/,
+// never into the public dist/ that Cloudflare serves as static assets.
+import Base from '../../layouts/Base.astro';
+import Gallery from '../../components/Gallery.astro';
+
+export function getStaticPaths() {
+  if (process.env.PRIVATE_BUILD !== '1') return []; // public build emits nothing here
+  const files = import.meta.glob('../../content/clients/*.json', { eager: true }) as Record<string, any>;
+  return Object.entries(files).map(([path, mod]) => ({
+    params: { client: path.split('/').pop()!.replace('.json', '') },
+    props: { data: mod.default },
+  }));
+}
+const { client } = Astro.params;
+const { data } = Astro.props;
+---
+<Base title={data.title} noindex>
+  <section class="mx-auto max-w-6xl px-5 pt-12 pb-8 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="uppercase tracking-[.3em] text-xs text-seaglass-dark">Private gallery</p>
+      <h1 class="mt-2 text-4xl sm:text-5xl">{data.title}</h1>
+      {data.subtitle && <p class="mt-2 text-driftwood-dark">{data.subtitle}</p>}
+      <p class="mt-2 text-sm text-driftwood-dark">Proof images are watermarked. Select a photo to open it full size.</p>
+    </div>
+    <form method="post" action={`/clients/${client}/logout`}>
+      <button class="border border-driftwood/60 px-4 py-2 text-sm hover:border-navy">Log out</button>
+    </form>
+  </section>
+  <Gallery slug={client!} images={data.images} />
+  <div class="h-8"></div>
+</Base>

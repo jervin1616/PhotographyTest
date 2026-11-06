@@ -1,0 +1,2 @@
+# Copy to .dev.vars (gitignored) for `wrangler dev`. In production use: npx wrangler secret put SESSION_SECRET
+SESSION_SECRET=change-me-local-only

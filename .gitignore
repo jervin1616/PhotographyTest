@@ -15,3 +15,5 @@ dist/
 originals/
 cache/
 processed/
+private-dist/
+private-out/

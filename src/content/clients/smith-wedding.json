@@ -1,0 +1,56 @@
+{
+  "title": "The Smith Wedding",
+  "subtitle": "Coastal ceremony · proofs",
+  "password": {
+    "algo": "PBKDF2-SHA256",
+    "iterations": 100000,
+    "salt": "624e6b892542c6c4e41bde09fd32bf17",
+    "hash": "7719bb336c05fa21e8a03a10d242207a1704b6d6a970cc379fd1ef0187237836"
+  },
+  "images": [
+    {
+      "file": "001.jpg",
+      "size": "hero"
+    },
+    {
+      "file": "002.jpg",
+      "size": "wide"
+    },
+    {
+      "file": "003.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "004.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "005.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "006.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "007.jpg",
+      "size": "half"
+    },
+    {
+      "file": "008.jpg",
+      "size": "half"
+    },
+    {
+      "file": "009.jpg",
+      "size": "third"
+    },
+    {
+      "file": "010.jpg",
+      "size": "third"
+    },
+    {
+      "file": "011.jpg",
+      "size": "third"
+    }
+  ]
+}

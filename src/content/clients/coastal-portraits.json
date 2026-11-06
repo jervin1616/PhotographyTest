@@ -1,0 +1,56 @@
+{
+  "title": "Coastal Portraits",
+  "subtitle": "Shoreline sessions · proofs",
+  "password": {
+    "algo": "PBKDF2-SHA256",
+    "iterations": 100000,
+    "salt": "991cfc2904ebbb96654137e986de03a6",
+    "hash": "4e3d63f9b4049d07ee6829a6e71199e25bec0c5f03aa9cc71a42d2d97915fde3"
+  },
+  "images": [
+    {
+      "file": "003.jpg",
+      "size": "hero"
+    },
+    {
+      "file": "004.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "009.jpg",
+      "size": "wide"
+    },
+    {
+      "file": "001.jpg",
+      "size": "third"
+    },
+    {
+      "file": "002.jpg",
+      "size": "third"
+    },
+    {
+      "file": "005.jpg",
+      "size": "third"
+    },
+    {
+      "file": "006.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "007.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "008.jpg",
+      "size": "tall"
+    },
+    {
+      "file": "010.jpg",
+      "size": "half"
+    },
+    {
+      "file": "011.jpg",
+      "size": "half"
+    }
+  ]
+}
