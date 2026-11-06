@@ -4,23 +4,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
+import { JPG, makeProof } from './lib-image.mjs';
 
 const manifest = JSON.parse(fs.readFileSync('cache/manifest.json', 'utf8'));
-const JPG = { quality: 80, mozjpeg: true };
-
-function watermarkSvg(w, h) {
-  const size = Math.round(w / 14);
-  const stepX = Math.round(size * 4.2), stepY = Math.round(size * 3.2);
-  let texts = '';
-  for (let y = -stepY; y < h + stepY; y += stepY)
-    for (let x = -stepX; x < w + stepX; x += stepX)
-      texts += `<text x="${x + ((y / stepY) % 2 ? stepX / 2 : 0)}" y="${y}" transform="rotate(-28 ${x} ${y})">PROOF</text>`;
-  return Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
-      <style>text{font:700 ${size}px "DejaVu Sans",Arial,sans-serif;letter-spacing:${size / 8}px;fill:rgba(255,255,255,.34);stroke:rgba(0,0,0,.18);stroke-width:2}</style>
-      ${texts}</svg>`
-  );
-}
+const JPG_OPTS = JPG;
 
 const portfolio = [];
 for (const [key, meta] of Object.entries(manifest)) {
@@ -34,7 +21,7 @@ for (const [key, meta] of Object.entries(manifest)) {
     const { width, height } = await img.metadata();
     const w1800 = Math.min(1800, width);
     for (const w of [1800, 1200, 600]) {
-      await sharp(src).rotate().resize({ width: Math.min(w, width) }).jpeg(JPG).toFile(path.join(outDir, `${base}-${w}.jpg`));
+      await sharp(src).rotate().resize({ width: Math.min(w, width) }).jpeg(JPG_OPTS).toFile(path.join(outDir, `${base}-${w}.jpg`));
     }
     const outH = Math.round((height / width) * w1800);
     portfolio.push({ id: base, category: group, width: w1800, height: outH, alt: meta.alt, photographer: meta.photographer });
@@ -42,14 +29,7 @@ for (const [key, meta] of Object.entries(manifest)) {
     const src = path.join('originals', kind, group, file);
     const outDir = path.join('processed', 'clients', group);
     fs.mkdirSync(outDir, { recursive: true });
-    // full: 1800px wide max, watermarked
-    const resized = await sharp(src).rotate().resize({ width: 1800, withoutEnlargement: true }).toBuffer();
-    const m = await sharp(resized).metadata();
-    await sharp(resized).composite([{ input: watermarkSvg(m.width, m.height) }]).jpeg(JPG).toFile(path.join(outDir, file));
-    // thumb: 600px wide, watermarked too
-    const t = await sharp(src).rotate().resize({ width: 600 }).toBuffer();
-    const tm = await sharp(t).metadata();
-    await sharp(t).composite([{ input: watermarkSvg(tm.width, tm.height) }]).jpeg(JPG).toFile(path.join(outDir, `${base}-600.jpg`));
+    await makeProof(src, outDir, file);
   }
 }
 // order portfolio so categories interleave nicely on "All"

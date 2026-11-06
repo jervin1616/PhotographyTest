@@ -14,7 +14,8 @@
     "upload:remote": "node scripts/upload-r2.mjs --remote",
     "deploy": "npm run build && wrangler deploy",
     "test": "bash tests/verify-protection.sh",
-    "build:public": "astro build && node scripts/check-dist.mjs"
+    "build:public": "astro build && node scripts/check-dist.mjs",
+    "process:client": "node scripts/process-client.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.4",

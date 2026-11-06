@@ -19,10 +19,10 @@ echo "Testing: $BASE"
 echo "---------------------------------------------------------------"
 
 # 1. gallery page without cookie is not served
-r=$(curl -s -i "$BASE/clients/$S"); c=$(echo "$r" | head -1 | awk '{print $2}')
+r=$(curl -s -i "$BASE/clients/$S"); c=$(echo "$r" | grep -E '^HTTP/' | tail -1 | awk '{print $2}')
 leak=$(echo "$r" | grep -c -E 'class="gallery"|/img/001')
 check "1. Gallery page without cookie is NOT served (smith)" "$([ "$c" = 401 ] && [ "$leak" = 0 ] && echo 1)" "status=$c gallery-markup-lines=$leak"
-r=$(curl -s -i "$BASE/clients/$P"); c=$(echo "$r" | head -1 | awk '{print $2}')
+r=$(curl -s -i "$BASE/clients/$P"); c=$(echo "$r" | grep -E '^HTTP/' | tail -1 | awk '{print $2}')
 leak=$(echo "$r" | grep -c -E 'class="gallery"|/img/001')
 check "1b. Gallery page without cookie is NOT served (portraits)" "$([ "$c" = 401 ] && [ "$leak" = 0 ] && echo 1)" "status=$c gallery-markup-lines=$leak"
 
@@ -33,28 +33,28 @@ for f in 001.jpg 001-600.jpg; do
 done
 
 # 3. wrong password rejected
-r=$(login $S "not-the-password"); c=$(echo "$r" | head -1 | awk '{print $2}')
+r=$(login $S "not-the-password"); c=$(echo "$r" | grep -E '^HTTP/' | tail -1 | awk '{print $2}')
 sc=$(echo "$r" | grep -ic '^set-cookie:')
 check "3. Wrong password rejected (401, no cookie set, generic message)" "$([ "$c" = 401 ] && [ "$sc" = 0 ] && echo "$r" | grep -q 'Incorrect password' && echo 1)" "status=$c set-cookie=$sc"
 
 # 4. Smith password does not open Portraits
-r=$(login $P "$SMITH_PW"); c=$(echo "$r" | head -1 | awk '{print $2}'); sc=$(echo "$r" | grep -ic '^set-cookie:')
+r=$(login $P "$SMITH_PW"); c=$(echo "$r" | grep -E '^HTTP/' | tail -1 | awk '{print $2}'); sc=$(echo "$r" | grep -ic '^set-cookie:')
 check "4. Smith password on Portraits rejected" "$([ "$c" = 401 ] && [ "$sc" = 0 ] && echo 1)" "status=$c set-cookie=$sc"
 
 # 5. correct password loads the gallery and its images
-r=$(login $S "$SMITH_PW"); c=$(echo "$r" | head -1 | awk '{print $2}')
+r=$(login $S "$SMITH_PW"); c=$(echo "$r" | grep -E '^HTTP/' | tail -1 | awk '{print $2}')
 SC=$(echo "$r" | cookie_of)
 check "5a. Correct Smith password accepted (303 + cookie)" "$([ "$c" = 303 ] && [ -n "$SC" ] && echo 1)" "status=$c"
 flags=$(echo "$r" | grep -i '^set-cookie:' | head -1)
 check "5b. Cookie is HttpOnly, Secure, SameSite=Lax, path-scoped to /clients/$S" "$(echo "$flags" | grep -qi 'HttpOnly' && echo "$flags" | grep -qi 'Secure' && echo "$flags" | grep -qi 'SameSite=Lax' && echo "$flags" | grep -qi "Path=/clients/$S" && echo 1)" "$flags"
-page=$(curl -s -i -H "Cookie: $SC" "$BASE/clients/$S"); pc=$(echo "$page" | head -1 | awk '{print $2}')
+page=$(curl -s -i -H "Cookie: $SC" "$BASE/clients/$S"); pc=$(echo "$page" | grep -E '^HTTP/' | tail -1 | awk '{print $2}')
 n=$(echo "$page" | grep -o '/clients/smith-wedding/img/[0-9]*\.jpg' | sort -u | wc -l)
 check "5c. Gallery page loads with cookie (200, $n full-size image links)" "$([ "$pc" = 200 ] && [ "$n" -ge 10 ] && echo 1)" "status=$pc images=$n"
 ic=$(curl -s -o /tmp/proof.jpg -w '%{http_code} %{content_type} %{size_download}' -H "Cookie: $SC" "$BASE/clients/$S/img/001.jpg")
 check "5d. Image loads with cookie ($ic)" "$(echo "$ic" | awk '{exit !($1==200 && $2=="image/jpeg" && $3>20000)}' && echo 1)" "$ic"
 bad_imgs=0; for f in $(echo "$page" | grep -o "/clients/$S/img/[0-9]*\(-600\)\?\.jpg" | sed 's|.*/img/||' | sort -u); do
-  c=$(code -H "Cookie: $SC" "$BASE/clients/$S/img/$f"); [ "$c" = 200 ] || bad_imgs=$((bad_imgs+1)); done
-check "5e. Every image (full + thumbnail) linked from the gallery loads with the cookie" "$([ "$bad_imgs" = 0 ] && echo 1)" "failed=$bad_imgs"
+  c=$(code -H "Cookie: $SC" "$BASE/clients/$S/img/$f"); [ "$c" = 200 ] || { bad_imgs=$((bad_imgs+1)); bad_list="$bad_list $f=$c"; }; done
+check "5e. Every image (full + thumbnail) linked from the gallery loads with the cookie" "$([ "$bad_imgs" = 0 ] && echo 1)" "failed=$bad_imgs:$bad_list"
 
 # 6. Smith cookie does not grant Portraits
 c1=$(code -H "Cookie: $SC" "$BASE/clients/$P/img/001.jpg")
