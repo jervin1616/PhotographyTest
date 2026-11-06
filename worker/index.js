@@ -201,7 +201,7 @@ h1{font:400 1.9rem/1.1 "Iowan Old Style",Palatino,Georgia,serif;margin:0 0 .5rem
 p{margin:.25rem 0 1rem;color:#5e5144}label{display:block;font-size:.85rem;margin-bottom:.35rem}
 input{width:100%;box-sizing:border-box;padding:.75rem 1rem;border:1px solid #8b7a6899;background:#fff;font:inherit}
 button{margin-top:1rem;width:100%;padding:.8rem;background:#10263d;color:#f4ede1;border:0;font:inherit;cursor:pointer}
-button:hover{background:#4f8a7b}.err{color:#8a1c1c;margin-top:.75rem}a{color:inherit}
+button:hover{background:#3a6f61}.err{color:#8a1c1c;margin-top:.75rem}a{color:inherit}
 </style></head><body><main>
 <h1>Private gallery</h1><p>Enter the password we sent you to view this gallery.</p>
 <form method="post" action="/clients/${esc(slug)}">
