@@ -1,0 +1,17 @@
+# secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+demo-passwords.local.json
+
+# deps / build
+node_modules/
+dist/
+.astro/
+.wrangler/
+
+# originals and unprocessed photos never go in the repo
+originals/
+cache/
+processed/
