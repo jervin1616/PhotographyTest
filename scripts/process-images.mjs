@@ -9,6 +9,15 @@ import { JPG, makeProof } from './lib-image.mjs';
 const manifest = JSON.parse(fs.readFileSync('cache/manifest.json', 'utf8'));
 const JPG_OPTS = JPG;
 
+// public photos: 480/800/1200/1800 wide, JPEG + WebP of each (the browser picks the best via <picture>)
+const WIDTHS = [480, 800, 1200, 1800];
+async function writeSizes(src, outDir, name, srcWidth) {
+  for (const w of WIDTHS) {
+    const r = () => sharp(src).rotate().resize({ width: Math.min(w, srcWidth) });
+    await r().jpeg(JPG_OPTS).toFile(path.join(outDir, `${name}-${w}.jpg`));
+    await r().webp({ quality: 76, effort: 5 }).toFile(path.join(outDir, `${name}-${w}.webp`));
+  }
+}
 const portfolio = [];
 const siteImages = {};
 for (const [key, meta] of Object.entries(manifest)) {
@@ -20,7 +29,7 @@ for (const [key, meta] of Object.entries(manifest)) {
     const outDir = 'public/photos/site';
     fs.mkdirSync(outDir, { recursive: true });
     const { width, height } = await sharp(src).rotate().metadata();
-    for (const w of [1800, 1200, 600]) await sharp(src).rotate().resize({ width: Math.min(w, width) }).jpeg(JPG_OPTS).toFile(path.join(outDir, `${name}-${w}.jpg`));
+    await writeSizes(src, outDir, name, width);
     const w1800 = Math.min(1800, width);
     siteImages[name] = { width: w1800, height: Math.round((height / width) * w1800), alt: meta.alt, photographer: meta.photographer };
     continue;
@@ -33,9 +42,7 @@ for (const [key, meta] of Object.entries(manifest)) {
     const img = sharp(src).rotate();
     const { width, height } = await img.metadata();
     const w1800 = Math.min(1800, width);
-    for (const w of [1800, 1200, 600]) {
-      await sharp(src).rotate().resize({ width: Math.min(w, width) }).jpeg(JPG_OPTS).toFile(path.join(outDir, `${base}-${w}.jpg`));
-    }
+    await writeSizes(src, outDir, base, width);
     const outH = Math.round((height / width) * w1800);
     portfolio.push({ id: base, category: group, width: w1800, height: outH, alt: meta.alt, photographer: meta.photographer });
   } else {

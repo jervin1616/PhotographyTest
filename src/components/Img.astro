@@ -1,10 +1,13 @@
 ---
-// Responsive image with real width/height (no layout shift), srcset 600/1200/1800.
+// Responsive image with real width/height (no layout shift): WebP + JPEG fallback, 480/800/1200/1800 wide.
 import { imgInfo } from '../lib/images';
 interface Props { id: string; sizes?: string; class?: string; alt?: string; loading?: 'lazy' | 'eager'; fetchpriority?: 'high' | 'low' | 'auto'; decorative?: boolean; style?: string }
 const { id, sizes = '100vw', class: cls = '', alt, loading = 'lazy', fetchpriority, decorative = false, style } = Astro.props;
 const i = imgInfo(id);
 ---
-<img src={i.src(1200)} srcset={`${i.src(600)} 600w, ${i.src(1200)} 1200w, ${i.src(1800)} 1800w`} sizes={sizes}
-  width={i.width} height={i.height} alt={decorative ? '' : (alt ?? i.alt)} aria-hidden={decorative ? 'true' : undefined}
-  loading={loading} fetchpriority={fetchpriority} decoding="async" class={cls} style={style} />
+<picture>
+  <source type="image/webp" srcset={`${i.webp(480)} 480w, ${i.webp(800)} 800w, ${i.webp(1200)} 1200w, ${i.webp(1800)} 1800w`} sizes={sizes} />
+  <img src={i.src(1200)} srcset={`${i.src(480)} 480w, ${i.src(800)} 800w, ${i.src(1200)} 1200w, ${i.src(1800)} 1800w`} sizes={sizes}
+    width={i.width} height={i.height} alt={decorative ? '' : (alt ?? i.alt)} aria-hidden={decorative ? 'true' : undefined}
+    loading={loading} fetchpriority={fetchpriority} decoding="async" class={cls} style={style} />
+</picture>

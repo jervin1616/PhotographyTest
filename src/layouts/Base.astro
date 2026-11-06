@@ -54,7 +54,7 @@ const here = (href: string) => (href === '/' ? path === '/' : path.startsWith(hr
       </div>
       <div class="site-bar">
         <div class="container-x flex h-[4.5rem] items-center justify-between">
-          <a href="/" class="brand" aria-label="Saltmarsh Photo Co. home">Saltmarsh<span>Photo Co.</span></a>
+          <a href="/" class="brand">Saltmarsh <span>Photo Co.</span></a>
           <nav class="hidden items-center gap-9 min-[900px]:flex" aria-label="Main">
             {nav.map((n) => <a class="nav-link" href={n.href} aria-current={here(n.href) ? 'page' : undefined}>{n.label}</a>)}
             <a class="btn btn-ghost !px-5 !py-2.5" href="/client-login/">Client login</a>
@@ -76,7 +76,7 @@ const here = (href: string) => (href === '/' ? path === '/' : path.startsWith(hr
     <footer class="relative mt-16 border-t border-line bg-black/30">
       <div class="container-x grid gap-12 py-16 md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div>
-          <a href="/" class="brand">Saltmarsh<span>Photo Co.</span></a>
+          <a href="/" class="brand">Saltmarsh <span>Photo Co.</span></a>
           <p class="mt-5 font-script text-4xl leading-tight text-paper">Until the next tide.</p>
           <p class="mt-4 max-w-xs text-sm leading-relaxed text-mist">A fictional coastal photography studio, built as a demo of what a beautiful, private-gallery photography site can be.</p>
         </div>

@@ -16,7 +16,7 @@ const places = ['Dune paths', 'Long timber piers', 'Marsh boardwalks', 'Lighthou
 // with no client names or links back to them.
 const wall = (credits as any[]).filter((c) => c.image.startsWith('portfolio/') || c.image.startsWith('site/')).map((c) => {
   const m = c.image.match(/^(portfolio)\/[a-z]+\/([a-z]+-\d+)\.jpg$/) || c.image.match(/^(site)\/([a-z-]+)\.jpg$/);
-  return { ...c, thumb: m ? `/photos/${m[1]}/${m[2]}-600.jpg` : null };
+  return { ...c, thumb: m ? `/photos/${m[1]}/${m[2]}-480.jpg` : null };
 }).filter((c) => c.thumb);
 const privateCredits = (credits as any[]).filter((c) => c.image.startsWith('clients/'));
 ---

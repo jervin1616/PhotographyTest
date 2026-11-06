@@ -118,6 +118,17 @@ await p.goto(BASE + '/portfolio/'); await p.waitForTimeout(600);
 await p.locator('.masonry a').first().tap(); await p.waitForTimeout(500);
 ok('mobile: lightbox opens on tap', await p.locator('.lb.open').count() === 1);
 
+// ---- every image on every page actually loads (catches broken srcset/WebP paths)
+p = await page();
+for (const path of ['/', '/portfolio/', '/services/', '/about/', '/contact/', '/client-login/']) {
+  await p.goto(BASE + path); await p.waitForTimeout(700);
+  const h = await p.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = 0; y < h; y += 500) { await p.evaluate((y) => window.scrollTo(0, y), y); await p.waitForTimeout(80); }
+  await p.waitForTimeout(900);
+  const r = await p.evaluate(() => { const all = [...document.images]; return { n: all.length, broken: all.filter((i) => !(i.complete && i.naturalWidth > 0)).map((i) => i.currentSrc || i.src) }; });
+  ok(`images: ${path} all ${r.n} images load`, r.broken.length === 0, r.broken.slice(0, 3).join(', '));
+}
+ok('webp is actually served to modern browsers', await p.goto(BASE + '/').then(() => p.waitForTimeout(800)).then(() => p.evaluate(() => [...document.images].some((i) => /\.webp/.test(i.currentSrc)))));
 ok('no JavaScript errors or failed requests across all pages', errors.length === 0, [...new Set(errors)].join(' | '));
 await b.close();
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);

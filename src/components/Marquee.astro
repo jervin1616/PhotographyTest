@@ -2,8 +2,8 @@
 interface Props { items?: string[] }
 const { items = ['Weddings', 'Portraits', 'Landscapes', 'Private galleries', 'Fine-art prints', 'Golden hour', 'Salt air'] } = Astro.props;
 ---
-<div class="marquee" aria-label={items.join(', ')}>
-  <div class="marquee-track" aria-hidden="true">
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
     {[0, 1].map(() => items.map((t) => <><span>{t}</span><em>✦</em></>))}
   </div>
 </div>
