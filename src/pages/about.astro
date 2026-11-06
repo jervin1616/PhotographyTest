@@ -1,40 +1,107 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Img from '../components/Img.astro';
+import CtaBand from '../components/CtaBand.astro';
 import credits from '../data/credits.json';
+const craft = [
+  ['Natural light first', 'We shoot in the soft hours around sunrise and sunset and read the sky like a forecast. Flash is the exception, never the plan.'],
+  ['Tide tables over timetables', 'We scout every location and plan around water and weather, so there is always a graceful plan B.'],
+  ['Quietly directed', 'Light prompts, not stiff poses. You will get to be yourselves, with a little guidance.'],
+  ['Made to keep', 'Careful colour, gentle grain, archival prints and a private gallery that stays online for a year.'],
+];
+const places = ['Dune paths', 'Long timber piers', 'Marsh boardwalks', 'Lighthouse beaches', 'Quiet coves', 'Harbour towns'];
+
+// credits wall: public photos only (portfolio + page images). Private-gallery photos are credited in a list below,
+// with no client names or links back to them.
+const wall = (credits as any[]).filter((c) => c.image.startsWith('portfolio/') || c.image.startsWith('site/')).map((c) => {
+  const m = c.image.match(/^(portfolio)\/[a-z]+\/([a-z]+-\d+)\.jpg$/) || c.image.match(/^(site)\/([a-z-]+)\.jpg$/);
+  return { ...c, thumb: m ? `/photos/${m[1]}/${m[2]}-600.jpg` : null };
+}).filter((c) => c.thumb);
+const privateCredits = (credits as any[]).filter((c) => c.image.startsWith('clients/'));
 ---
-<Base title="About" description="About Saltmarsh Photo Co., a fictional coastal photography studio.">
-  <section class="mx-auto max-w-6xl px-5 pt-14 grid gap-12 md:grid-cols-2 items-center">
-    <div class="reveal">
-      <h1 class="text-4xl sm:text-5xl">About the studio</h1>
-      <div class="mt-6 space-y-4 text-lg leading-relaxed text-mist">
-        <p>Saltmarsh Photo Co. is a small, fictional studio built around one idea: the coast looks best when nobody is hurrying it.</p>
-        <p>We shoot weddings on the shoreline, portraits in the dunes, and landscapes at the edges of the day, when the light is soft and the beach is empty.</p>
-        <p>Every session ends in a private online gallery, so you can look through your photographs in your own time.</p>
+<Base title="About" description="The story behind Saltmarsh Photo Co., a small coastal photography studio, and how we work.">
+  <PageHero image="site/about-story" kicker="Hello, we're" title="Saltmarsh Photo Co." subtitle="A small studio with a very large tide table. We photograph the coast and the people who love it." position="center 8%" />
+
+  <!-- story -->
+  <section class="container-x grid items-center gap-16 pb-24 lg:grid-cols-2 lg:pb-32">
+    <div>
+      <p class="kicker reveal">Our story</p>
+      <h2 class="h-section mt-2 reveal" style="--d:80ms">The coast looks best when nobody is hurrying it.</h2>
+      <div class="mt-7 space-y-5 text-lg leading-relaxed text-mist">
+        <p class="reveal" style="--d:140ms">Saltmarsh Photo Co. began with a simple idea: photographs should feel like the day did. Warm, a little windswept, and entirely yours.</p>
+        <p class="reveal" style="--d:200ms">We shoot weddings on the shoreline, portraits in the dunes and landscapes at the edges of the day, when the light is soft and the beach is empty.</p>
+        <p class="reveal" style="--d:260ms">Every session ends in a private online gallery, so you can look through your photographs in your own time.</p>
       </div>
-      <a href="/contact/" class="mt-8 inline-block bg-paper text-ink px-6 py-3 text-sm tracking-wide hover:bg-seaglass transition-colors">Get in touch</a>
+      <div class="mt-9 flex flex-wrap items-center gap-6 reveal" style="--d:320ms">
+        <a class="btn btn-primary" href="/contact/">Get in touch <span class="arr" aria-hidden="true">→</span></a>
+        <a class="link-u text-sm tracking-[.14em] uppercase" href="/contact/#elena">Meet Elena, our founder →</a>
+      </div>
     </div>
-    <img src="/photos/portfolio/landscapes-04-1200.jpg" srcset="/photos/portfolio/landscapes-04-600.jpg 600w, /photos/portfolio/landscapes-04-1200.jpg 1200w"
-      sizes="(min-width:768px) 50vw, 100vw" width="1200" height="797" alt="Golden marsh grasses beside a calm blue river" loading="lazy" decoding="async"
-      class="w-full h-auto reveal" />
+    <div class="relative">
+      <div class="reveal-img"><Img id="site/about-hero" sizes="(min-width:1024px) 45vw, 100vw" class="aspect-[4/5] w-full object-cover" style="object-position:50% 85%" /></div>
+      <p class="mt-6 font-script text-4xl leading-tight text-seaglass reveal" style="--d:300ms">where land and sea haven't made up their minds</p>
+    </div>
   </section>
 
-  <section id="credits" class="mx-auto max-w-6xl px-5 mt-24 reveal">
-    <h2 class="text-3xl">Photo credits</h2>
-    <p class="mt-3 text-mist max-w-2xl">
-      This is a demo site. Every photograph comes from <a class="underline" href="https://unsplash.com/?utm_source=saltmarsh_photo_demo&utm_medium=referral">Unsplash</a>
-      and belongs to its photographer. Thank you to all of them.
-    </p>
-    <details class="mt-6">
-      <summary class="cursor-pointer text-sm underline underline-offset-4">Show all {credits.length} credits</summary>
-      <ul class="mt-4 grid gap-x-8 gap-y-1 sm:grid-cols-2 text-sm text-mist">
-        {credits.map((c) => (
+  <!-- craft -->
+  <section class="border-y border-line bg-black/20 py-24 lg:py-32">
+    <div class="container-x grid items-center gap-14 lg:grid-cols-[.9fr_1.1fr]">
+      <div class="reveal-img"><Img id="site/about-detail" sizes="(min-width:1024px) 40vw, 100vw" class="aspect-[4/3] w-full object-cover" /></div>
+      <div>
+        <p class="kicker reveal">The craft</p>
+        <h2 class="h-section mt-2 reveal" style="--d:80ms">How we work</h2>
+        <ol class="mt-9 space-y-7">
+          {craft.map(([t, d], i) => (
+            <li class="grid grid-cols-[auto_1fr] gap-5 reveal" style={`--d:${i * 90}ms`}>
+              <span class="font-script text-4xl leading-none text-sun">0{i + 1}</span>
+              <div><h3 class="text-3xl">{t}</h3><p class="mt-1 text-mist leading-relaxed">{d}</p></div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- places -->
+  <section class="container-x py-24 text-center lg:py-28">
+    <p class="kicker reveal">Where you'll find us</p>
+    <h2 class="h-section mx-auto mt-2 max-w-2xl reveal" style="--d:80ms">Wherever the coast looks its best</h2>
+    <ul class="mx-auto mt-10 flex max-w-3xl flex-wrap justify-center gap-3">
+      {places.map((p, i) => <li class="chip reveal" style={`--d:${i * 70}ms`}>{p}</li>)}
+    </ul>
+  </section>
+
+  <!-- credits wall -->
+  <section id="credits" class="border-t border-line py-24 lg:py-28">
+    <div class="container-x">
+      <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="kicker reveal">With thanks</p>
+          <h2 class="h-section mt-2 reveal" style="--d:80ms">Photo credits</h2>
+        </div>
+        <p class="max-w-md text-sm leading-relaxed text-mist reveal">This is a demo site. Every photograph comes from <a class="underline hover:text-seaglass" href="https://unsplash.com/?utm_source=saltmarsh_photo_demo&utm_medium=referral" rel="noopener">Unsplash</a> and belongs to its photographer. Hover a photo to see who made it.</p>
+      </div>
+      <ul class="grid grid-cols-3 gap-2 sm:grid-cols-5">
+        {wall.map((c, i) => (
           <li>
-            <a class="underline" href={c.photoUrl} rel="noopener">Photo</a> by
-            <a class="underline" href={c.photographerUrl} rel="noopener">{c.photographer}</a>
-            on Unsplash
+            <a class="credit-card reveal" style={`--d:${(i % 8) * 40}ms`} href={c.photoUrl} rel="noopener" target="_blank" aria-label={`Photo by ${c.photographer} on Unsplash`}>
+              <img src={c.thumb} alt="" width="300" height="300" loading="lazy" decoding="async" />
+              <span>{c.photographer}</span>
+            </a>
           </li>
         ))}
       </ul>
-    </details>
+      <details class="mt-10 text-sm text-mist">
+        <summary class="cursor-pointer underline underline-offset-4 hover:text-paper">Credits for photographs in private client galleries ({privateCredits.length})</summary>
+        <ul class="mt-4 grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+          {privateCredits.map((c) => (
+            <li><a class="underline" href={c.photoUrl} rel="noopener">Photo</a> by <a class="underline" href={c.photographerUrl} rel="noopener">{c.photographer}</a> on Unsplash</li>
+          ))}
+        </ul>
+      </details>
+    </div>
   </section>
+
+  <CtaBand kicker="Come say hello" title="We'd love to hear your story." />
 </Base>

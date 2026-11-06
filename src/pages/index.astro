@@ -1,52 +1,115 @@
 ---
 import Base from '../layouts/Base.astro';
-import portfolio from '../data/portfolio.json';
-import captions from '../data/captions.json';
-const label: Record<string, string> = { weddings: 'Weddings', portraits: 'Portraits', landscapes: 'Landscapes' };
-const featured = ['weddings-01', 'portraits-02', 'landscapes-03', 'weddings-04']
-  .map((id) => ({ ...portfolio.find((p) => p.id === id)!, title: (captions as Record<string, { title: string }>)[id].title }));
+import Img from '../components/Img.astro';
+import Wave from '../components/Wave.astro';
+import Marquee from '../components/Marquee.astro';
+import Process from '../components/Process.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { imgInfo, categoryLabel } from '../lib/images';
+
+const slides = [
+  { ref: 'portfolio/landscapes-01', label: 'First light on the pier' },
+  { ref: 'portfolio/landscapes-05', label: 'Violet hour, low tide' },
+  { ref: 'site/contact-hero', label: 'Timber, salt and sunrise' },
+  { ref: 'portfolio/landscapes-06', label: 'Where the dunes begin' },
+].map((s) => ({ ...s, info: imgInfo(s.ref) }));
+
+const headline = 'Light, salt air, and the moments in between.'.split(' ');
+const featured = ['weddings-01', 'landscapes-05', 'portraits-02', 'landscapes-03', 'weddings-04'].map((id) => imgInfo(`portfolio/${id}`));
+const services = [
+  { href: '/services/#weddings', ref: 'portfolio/weddings-06', name: 'Weddings', blurb: 'Shoreline ceremonies, quiet elopements and every grey-sky, golden-hour in between.', from: '$3,200' },
+  { href: '/services/#portraits', ref: 'portfolio/portraits-06', name: 'Portraits', blurb: 'Couples, families and solo sessions at the water, in the dunes, or somewhere only you know.', from: '$450' },
+  { href: '/services/#landscapes', ref: 'portfolio/landscapes-05', name: 'Landscapes & prints', blurb: 'Fine-art coastline prints and commissions for homes, hotels and offices.', from: '$85' },
+].map((s) => ({ ...s, info: imgInfo(s.ref) }));
+const stats = [
+  { n: 140, s: '+', l: 'Weddings photographed' },
+  { n: 10, s: '', l: 'Years on the coast' },
+  { n: 1200, s: '+', l: 'Sunrises waited for' },
+  { n: 100, s: '%', l: 'Private, passworded galleries' },
+];
+const quotes = [
+  { q: 'We forgot the camera was even there, then cried when we opened our gallery.', who: 'Maya & Jordan', what: 'Beach wedding' },
+  { q: 'I hate being photographed. Somehow every frame looks like me on a very good day.', who: 'Priya S.', what: 'Portrait session' },
+  { q: 'They waited out the fog for an hour. The sunrise that followed was worth every minute.', who: 'Tom R.', what: 'Landscape print commission' },
+];
 ---
 <Base title="Home">
-  <section class="relative h-[78svh] min-h-[420px] text-paper">
-    <img src="/photos/portfolio/landscapes-01-1800.jpg"
-      srcset="/photos/portfolio/landscapes-01-600.jpg 600w, /photos/portfolio/landscapes-01-1200.jpg 1200w, /photos/portfolio/landscapes-01-1800.jpg 1800w"
-      sizes="100vw" width="1800" height="1200" alt="A pier reaching into a calm sea at sunrise"
-      class="absolute inset-0 h-full w-full object-cover" fetchpriority="high" decoding="async" />
-    <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent"></div>
-    <div class="relative h-full mx-auto max-w-6xl px-5 flex flex-col justify-end pb-14 sm:pb-20">
-      <p class="font-script text-5xl sm:text-6xl leading-none text-seaglass">Coastal photography</p>
-      <h1 class="mt-3 text-4xl sm:text-6xl max-w-2xl leading-[1.05]">Light, salt air, and the moments in between.</h1>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href="/portfolio/" class="bg-paper text-ink px-6 py-3 text-sm tracking-wide hover:bg-seaglass transition-colors">View portfolio</a>
-        <a href="/contact/" class="border border-paper/60 px-6 py-3 text-sm tracking-wide hover:bg-paper/10 transition-colors">Book a session</a>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-slides" aria-hidden="true">
+      {slides.map((s, i) => (
+        <div class:list={['hero-slide', i === 0 && 'is-active']} data-caption={`${s.label} · Photo by ${s.info.photographer}`}>
+          <Img id={s.ref} sizes="100vw" decorative loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} />
+        </div>
+      ))}
+    </div>
+    <div class="container-x pb-24 pt-40 sm:pb-28">
+      <p class="kicker fade-in" style="--d:100ms">Coastal photography</p>
+      <h1 class="h-display mt-3 max-w-5xl" aria-label="Light, salt air, and the moments in between.">
+        {headline.map((w, n) => <><span class="word" aria-hidden="true"><span style={`--i:${n}`}>{w}</span></span>{' '}</>)}
+      </h1>
+      <p class="lead fade-in mt-7 max-w-xl" style="--d:900ms; color: rgba(236,228,214,.85)">Weddings, portraits and the wild edge of the coast. Photographed unhurried and delivered in a private gallery you will want to open twice.</p>
+      <div class="fade-in mt-9 flex flex-wrap gap-3" style="--d:1100ms">
+        <a class="btn btn-primary" href="/portfolio/">View portfolio <span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="/contact/">Book a session</a>
       </div>
     </div>
-  </section>
-
-  <section class="mx-auto max-w-3xl px-5 py-20 text-center reveal">
-    <p class="font-script text-4xl sm:text-5xl leading-none text-seaglass">Our approach</p>
-    <h2 class="mt-3 text-3xl sm:text-4xl">Unhurried, honest, a little salty.</h2>
-    <p class="mt-6 text-lg leading-relaxed text-mist">
-      Saltmarsh Photo Co. photographs weddings, portraits and the wild edge of the coast. We work with the tide and the weather,
-      not against them, and deliver galleries you will want to print.
-    </p>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-5">
-    <div class="flex items-end justify-between reveal">
-      <h2 class="text-3xl">Featured work</h2>
-      <a href="/portfolio/" class="text-sm underline decoration-seaglass underline-offset-4 hover:text-seaglass">See all</a>
+    <div class="absolute inset-x-0 bottom-6 z-[2]">
+      <div class="container-x flex items-end justify-between gap-6">
+        <div class="hidden sm:block"><p class="scroll-cue"><i></i>Scroll</p></div>
+        <div class="flex flex-1 flex-col items-start gap-3 sm:items-end">
+          <p class="text-[.7rem] tracking-[.08em] text-paper/75" data-slide-caption>{slides[0].label} · Photo by {slides[0].info.photographer}</p>
+          <div class="dots" role="group" aria-label="Choose slide">
+            {slides.map((s, i) => <button type="button" class:list={[i === 0 && 'is-active']} aria-label={`Show slide ${i + 1}: ${s.label}`}></button>)}
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-      {featured.map((p) => (
-        <a href="/portfolio/" class="reveal has-cap group relative block overflow-hidden bg-ink-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seaglass">
-          <img src={`/photos/portfolio/${p.id}-600.jpg`}
-            srcset={`/photos/portfolio/${p.id}-600.jpg 600w, /photos/portfolio/${p.id}-1200.jpg 1200w`}
-            sizes="(min-width:768px) 25vw, 50vw"
-            width={p.width} height={p.height} alt={p.alt} loading="lazy" decoding="async"
-            class="aspect-[3/4] w-full object-cover group-hover:scale-[1.04]" />
+    <Wave />
+  </section>
+
+  <Marquee />
+
+  <!-- ============ APPROACH ============ -->
+  <section class="container-x grid items-center gap-16 py-24 lg:grid-cols-[1.05fr_1fr] lg:py-32">
+    <div>
+      <p class="kicker reveal">Our approach</p>
+      <h2 class="h-section mt-3 reveal" style="--d:80ms">Unhurried, honest, <em class="font-serif italic text-seaglass">a little salty.</em></h2>
+      <p class="lead mt-6 reveal" style="--d:160ms">Saltmarsh Photo Co. photographs weddings, portraits and the wild edge of the coast. We work with the tide and the weather, not against them, and we deliver galleries you will want to print.</p>
+      <dl class="mt-10 grid gap-7 sm:grid-cols-3">
+        {[['Unhurried', 'We build slack into every plan for tide, weather and nerves. Your best frames rarely arrive on schedule.'], ['Honest', 'Natural light, light direction, no filters that age badly. You will recognise yourselves.'], ['A little salty', 'We love the coast in all weathers. Grey days make the moodiest wedding photographs.']].map(([t, d], i) => (
+          <div class="reveal" style={`--d:${240 + i * 100}ms`}>
+            <dt class="font-script text-3xl leading-none text-sun">0{i + 1}</dt>
+            <dd class="mt-2 font-serif text-2xl">{t}</dd>
+            <dd class="mt-1 text-sm leading-relaxed text-mist">{d}</dd>
+          </div>
+        ))}
+      </dl>
+      <a class="btn btn-ghost mt-10 reveal" href="/about/" style="--d:540ms">Our story <span class="arr" aria-hidden="true">→</span></a>
+    </div>
+    <div class="relative mx-auto grid w-full max-w-xl grid-cols-6 gap-3 sm:gap-4">
+      <div class="reveal-img col-span-4 row-span-2" data-parallax="0.05"><Img id="portfolio/weddings-01" sizes="(min-width:1024px) 28vw, 66vw" class="aspect-[3/4] w-full object-cover" /></div>
+      <div class="reveal-img col-span-2 self-start" style="--d:150ms"><Img id="portfolio/landscapes-04" sizes="(min-width:1024px) 14vw, 33vw" class="aspect-[3/4] w-full object-cover" /></div>
+      <div class="reveal-img col-span-2 self-end" style="--d:300ms" data-parallax="-0.04"><Img id="portfolio/portraits-04" sizes="(min-width:1024px) 14vw, 33vw" class="aspect-[3/4] w-full object-cover" /></div>
+      <p class="absolute -bottom-6 right-0 hidden font-script text-5xl text-seaglass sm:block">since 2016</p>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED WORK ============ -->
+  <section class="container-x pb-24 lg:pb-32">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="kicker reveal">Recent favourites</p>
+        <h2 class="h-section mt-2 reveal" style="--d:80ms">Featured work</h2>
+      </div>
+      <a class="link-u reveal text-sm tracking-[.16em] uppercase" href="/portfolio/" style="--d:160ms">See the full portfolio →</a>
+    </div>
+    <div class="bento">
+      {featured.map((p, i) => (
+        <a href="/portfolio/" class="tile reveal-img" style={`--d:${i * 90}ms`} data-cursor="View" aria-label={`${p.title}, ${categoryLabel[p.category!]}`}>
+          <Img id={p.ref} sizes={i === 1 ? '(min-width:900px) 50vw, 100vw' : '(min-width:900px) 25vw, 50vw'} />
           <span class="cap">
-            <span class="cap-eyebrow">{label[p.category]}</span>
+            <span class="cap-eyebrow">{categoryLabel[p.category!]}</span>
             <span class="cap-title">{p.title}</span>
             <span class="cap-credit">Photo by {p.photographer} · Unsplash</span>
           </span>
@@ -55,13 +118,91 @@ const featured = ['weddings-01', 'portraits-02', 'landscapes-03', 'weddings-04']
     </div>
   </section>
 
-  <section class="mx-auto max-w-6xl px-5 mt-24">
-    <div class="bg-ink-2 px-6 py-12 sm:px-12 grid gap-6 sm:grid-cols-[1fr_auto] items-center reveal">
-      <div>
-        <h2 class="font-script text-4xl sm:text-5xl leading-none">Already a client?</h2>
-        <p class="mt-2 text-mist">Your private gallery is protected by a password we send you after your session.</p>
+  <!-- ============ SERVICES ============ -->
+  <section class="border-y border-line bg-black/20 py-24 lg:py-32">
+    <div class="container-x">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="kicker reveal">What we photograph</p>
+        <h2 class="h-section mt-2 reveal" style="--d:80ms">Three ways to work together</h2>
       </div>
-      <a href="/client-login/" class="bg-paper text-ink px-6 py-3 text-sm tracking-wide text-center hover:bg-seaglass transition-colors">Client login</a>
+      <div class="mt-14 grid gap-5 md:grid-cols-3">
+        {services.map((s, i) => (
+          <a href={s.href} class="svc reveal" style={`--d:${i * 120}ms`} data-cursor="Explore">
+            <Img id={s.ref} sizes="(min-width:768px) 33vw, 100vw" decorative />
+            <div class="inner">
+              <p class="label">From {s.from}</p>
+              <h3 class="mt-2 text-4xl">{s.name}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-paper/80">{s.blurb}</p>
+              <p class="mt-4 text-xs uppercase tracking-[.2em] text-seaglass">Explore →</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section class="container-x grid grid-cols-2 gap-10 py-24 text-center lg:grid-cols-4 lg:py-28">
+    {stats.map((s, i) => (
+      <div class="reveal" style={`--d:${i * 100}ms`}>
+        <p class="stat-num"><span data-count={s.n}>{s.n.toLocaleString('en-US')}</span><sup>{s.s}</sup></p>
+        <p class="label mt-3 !text-mist">{s.l}</p>
+      </div>
+    ))}
+  </section>
+
+  <!-- ============ TESTIMONIALS ============ -->
+  <section class="border-t border-line pb-24 pt-24 lg:pb-32" data-carousel>
+    <div class="container-x">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="kicker reveal">Kind words</p>
+          <h2 class="h-section mt-2 reveal" style="--d:80ms">What clients say</h2>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" class="btn btn-ghost !px-4 !py-3" data-prev aria-label="Previous testimonial">←</button>
+          <button type="button" class="btn btn-ghost !px-4 !py-3" data-next aria-label="Next testimonial">→</button>
+        </div>
+      </div>
+      <div class="carousel mt-10" tabindex="0" aria-label="Client testimonials">
+        {quotes.map((q) => (
+          <figure class="panel flex flex-col justify-between p-8 sm:p-10">
+            <div>
+              <p class="quote-mark" aria-hidden="true">“</p>
+              <blockquote class="-mt-4 font-serif text-3xl leading-snug sm:text-4xl">{q.q}</blockquote>
+            </div>
+            <figcaption class="mt-8 text-sm"><span class="text-paper">{q.who}</span> <span class="text-mist">· {q.what}</span></figcaption>
+          </figure>
+        ))}
+      </div>
+      <p class="mt-6 text-xs text-mist">Sample testimonials, written for this demo.</p>
+    </div>
+  </section>
+
+  <!-- ============ PROCESS ============ -->
+  <section class="border-t border-line py-24 lg:py-32">
+    <div class="container-x">
+      <div class="mb-14 max-w-xl">
+        <p class="kicker reveal">How it works</p>
+        <h2 class="h-section mt-2 reveal" style="--d:80ms">From hello to heirloom</h2>
+      </div>
+      <Process />
+    </div>
+  </section>
+
+  <CtaBand />
+
+  <!-- ============ CLIENT LOGIN ============ -->
+  <section class="container-x pb-4 pt-8">
+    <div class="panel relative overflow-hidden p-8 sm:p-12 reveal">
+      <div class="grid items-center gap-8 md:grid-cols-[auto_1fr_auto]">
+        <svg class="text-seaglass" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.2" fill="currentColor"/></svg>
+        <div>
+          <h2 class="font-script text-5xl leading-none">Already a client?</h2>
+          <p class="mt-3 text-mist">Your private gallery is protected by a password we send you after your session.</p>
+        </div>
+        <a class="btn btn-primary" href="/client-login/">Client login <span class="arr" aria-hidden="true">→</span></a>
+      </div>
     </div>
   </section>
 </Base>

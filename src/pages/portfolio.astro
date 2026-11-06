@@ -1,52 +1,52 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Img from '../components/Img.astro';
+import CtaBand from '../components/CtaBand.astro';
 import portfolio from '../data/portfolio.json';
-const cats = [['all', 'All'], ['weddings', 'Weddings'], ['portraits', 'Portraits'], ['landscapes', 'Landscapes']];
-// mixed grid: a few items span wider on larger screens
-const spans: Record<string, string> = { 'weddings-01': '', 'landscapes-01': 'md:col-span-2', 'portraits-02': '', 'landscapes-02': 'md:col-span-2' };
----
-<Base title="Portfolio" description="Weddings, portraits and landscapes from the coast.">
-  <section class="mx-auto max-w-6xl px-5 pt-14">
-    <h1 class="text-4xl sm:text-5xl">Portfolio</h1>
-    <p class="mt-3 text-mist max-w-xl">A selection of recent work. Filter by the kind of session you are curious about.</p>
-    <div class="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filter portfolio">
-      {cats.map(([key, label]) => (
-        <button type="button" data-filter={key} aria-pressed={key === 'all'}
-          class="filter px-4 py-2 text-sm border border-line2 aria-pressed:bg-paper aria-pressed:text-ink aria-pressed:border-paper hover:border-paper transition-colors">{label}</button>
-      ))}
-    </div>
-  </section>
+import { imgInfo, categoryLabel } from '../lib/images';
 
-  <section class="mx-auto max-w-6xl px-5 mt-8">
-    <ul id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 grid-flow-dense">
-      {portfolio.map((p, i) => (
-        <li data-cat={p.category} class:list={['reveal overflow-hidden bg-ink-2', spans[p.id]]}>
-          <figure class="h-full">
-            <img src={`/photos/portfolio/${p.id}-600.jpg`}
-              srcset={`/photos/portfolio/${p.id}-600.jpg 600w, /photos/portfolio/${p.id}-1200.jpg 1200w, /photos/portfolio/${p.id}-1800.jpg 1800w`}
-              sizes={spans[p.id] ? '(min-width:768px) 66vw, 100vw' : '(min-width:768px) 33vw, 50vw'}
-              width={p.width} height={p.height} alt={p.alt}
-              loading={i < 2 ? 'eager' : 'lazy'} decoding="async"
-              class="h-full w-full object-cover aspect-[4/5] md:aspect-auto" style={spans[p.id] ? 'aspect-ratio:16/10' : undefined} />
-          </figure>
+const items = (portfolio as any[]).map((p) => imgInfo(`portfolio/${p.id}`));
+const count = (c: string) => items.filter((i) => i.category === c).length;
+const cats = [['all', 'All', items.length], ['weddings', 'Weddings', count('weddings')], ['portraits', 'Portraits', count('portraits')], ['landscapes', 'Landscapes', count('landscapes')]] as const;
+---
+<Base title="Portfolio" description="Weddings, portraits and coastal landscapes by Saltmarsh Photo Co. Browse the portfolio and open any photo full size.">
+  <PageHero image="portfolio/landscapes-02" kicker="Selected work" title="The Portfolio" subtitle="Weddings on the shoreline, portraits in the dunes and landscapes at the edges of the day. Choose a photo to see it full size." position="center 60%" />
+
+  <section class="container-x pb-8" data-filter-group>
+    <div class="flex flex-wrap items-center justify-between gap-5 border-b border-line pb-6">
+      <div class="flex flex-wrap gap-2" role="group" aria-label="Filter portfolio">
+        {cats.map(([key, label, n]) => (
+          <button type="button" class="chip" data-filter={key} aria-pressed={key === 'all' ? 'true' : 'false'}>{label}<small>{n}</small></button>
+        ))}
+      </div>
+      <p class="hidden text-xs tracking-[.14em] text-mist uppercase sm:block">Use ← → to browse once a photo is open</p>
+    </div>
+
+    <ul class="masonry mt-8" data-lightbox-group>
+      {items.map((p, i) => (
+        <li data-cat={p.category}>
+          <a class="tile reveal-img" style={`--d:${(i % 3) * 90}ms`} href={p.src(1800)} data-lightbox data-cursor="View"
+            data-title={p.title} data-alt={p.alt} data-credit={p.photographer} data-credit-url={p.photographerUrl}>
+            <Img id={p.ref} sizes="(min-width:820px) 33vw, 50vw" class="!h-auto w-full" loading={i < 4 ? 'eager' : 'lazy'} />
+            <span class="cap">
+              <span class="cap-eyebrow">{categoryLabel[p.category!]}</span>
+              <span class="cap-title">{p.title}</span>
+              <span class="cap-credit">Photo by {p.photographer} · Unsplash</span>
+            </span>
+          </a>
         </li>
       ))}
     </ul>
-    <p id="empty" hidden class="py-16 text-center text-mist">Nothing here yet.</p>
+    <p data-empty hidden class="py-24 text-center text-mist">Nothing here yet.</p>
   </section>
-  <div class="h-8"></div>
 
-  <script is:inline>
-    (function () {
-      var buttons = document.querySelectorAll('.filter');
-      var items = document.querySelectorAll('#grid > li');
-      buttons.forEach(function (b) {
-        b.addEventListener('click', function () {
-          var f = b.getAttribute('data-filter');
-          buttons.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-          items.forEach(function (li) { li.hidden = !(f === 'all' || li.getAttribute('data-cat') === f); });
-        });
-      });
-    })();
-  </script>
+  <section class="container-x py-20 text-center">
+    <div class="rule mx-auto max-w-xl"></div>
+    <p class="kicker mt-10 reveal">Looking for your own photographs?</p>
+    <p class="lead mx-auto mt-4 max-w-xl reveal" style="--d:100ms">Clients receive a private, passworded gallery for their session. Proofs are watermarked until you choose your favourites.</p>
+    <a class="btn btn-ghost mt-8 reveal" style="--d:200ms" href="/client-login/">Visit client login <span class="arr" aria-hidden="true">→</span></a>
+  </section>
+
+  <CtaBand />
 </Base>

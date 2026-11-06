@@ -1,43 +1,76 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Img from '../components/Img.astro';
 // DEMO ONLY: these passwords are deliberately public so visitors can try the demo.
 // The deployed data files and Worker only ever contain salted PBKDF2 hashes.
 const demos = [
-  { slug: 'smith-wedding', title: 'The Smith Wedding', password: 'driftwood-tide-42' },
-  { slug: 'coastal-portraits', title: 'Coastal Portraits', password: 'seaglass-dune-87' },
+  { slug: 'smith-wedding', title: 'The Smith Wedding', event: 'Wedding gallery', password: 'driftwood-tide-42', bg: 'portfolio/weddings-04', n: 11 },
+  { slug: 'coastal-portraits', title: 'Coastal Portraits', event: 'Portrait gallery', password: 'seaglass-dune-87', bg: 'portfolio/portraits-03', n: 11 },
+];
+const steps = [
+  ['Receive your link', 'After your session we email a private link and a password, usually within two weeks.', '<path d="M3 6.5 12 13l9-6.5M3 6.5v11h18v-11H3Z"/>'],
+  ['Unlock your gallery', 'Enter the password. The gallery page and every photo stay in private storage until it is checked.', '<rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'],
+  ['Browse your proofs', 'Photos carry a PROOF watermark. Open any one full size, and use the arrow keys to move through the set.', '<rect x="3.5" y="5" width="17" height="14" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4.5 3.5 3 3-2.5 4.5 4"/>'],
+  ['Choose your favourites', 'Tell us which frames you love and we deliver the finished, unmarked files and any prints.', '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>'],
 ];
 ---
-<Base title="Client Login" description="How private client galleries work at Saltmarsh Photo Co.">
-  <section class="mx-auto max-w-3xl px-5 pt-14">
-    <h1 class="text-4xl sm:text-5xl">Client login</h1>
-    <p class="mt-4 text-lg text-mist leading-relaxed">
-      After your session, we create a private gallery just for you. Open the link we email you and enter your password.
-      Galleries are never listed publicly and are hidden from search engines.
-    </p>
+<Base title="Client Login" description="How private client galleries work at Saltmarsh Photo Co., plus demo galleries you can try.">
+  <PageHero image="site/login-hero" small kicker="Welcome back" title="Client login" subtitle="Your photographs are waiting. Here is how to open your private gallery, or try one of our demo galleries below." position="center 55%" />
 
-    <h2 class="mt-12 text-2xl">How it works</h2>
-    <ol class="mt-4 space-y-3 list-decimal pl-5 text-mist leading-relaxed">
-      <li>You receive a link like <code class="bg-ink-2 px-1">/clients/your-name</code> and a password.</li>
-      <li>The gallery page and every photo in it are kept in private storage. They are only handed out after the password is checked.</li>
-      <li>Photos in the gallery carry a <strong>PROOF</strong> watermark. Final, unmarked files are delivered separately.</li>
-      <li>Each gallery has its own password. One gallery's password does not open another.</li>
-    </ol>
-
-    <h2 class="mt-12 text-2xl">Try the demo galleries</h2>
-    <p class="mt-3 text-sm bg-ink-2 px-4 py-3 text-mist">
-      Demo only: these passwords are shown here so you can try the site. Real client passwords would never be published.
-    </p>
-    <ul class="mt-6 grid gap-4 sm:grid-cols-2">
-      {demos.map((d) => (
-        <li class="border border-line bg-ink-2 p-5">
-          <h3 class="text-xl">{d.title}</h3>
-          <dl class="mt-3 text-sm space-y-1">
-            <div class="flex gap-2"><dt class="text-mist">Link</dt><dd><a class="underline" href={`/clients/${d.slug}`}>/clients/{d.slug}</a></dd></div>
-            <div class="flex gap-2"><dt class="text-mist">Password</dt><dd><code class="bg-ink-2 px-1">{d.password}</code></dd></div>
-          </dl>
-        </li>
+  <section id="how" class="container-x pb-20 lg:pb-28">
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {steps.map(([t, d, icon], i) => (
+        <div class="panel p-7 reveal" style={`--d:${i * 100}ms`}>
+          <svg class="text-seaglass" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true" set:html={icon} />
+          <p class="mt-6 font-script text-3xl leading-none text-sun">0{i + 1}</p>
+          <h2 class="mt-2 text-3xl">{t}</h2>
+          <p class="mt-3 text-sm leading-relaxed text-mist">{d}</p>
+        </div>
       ))}
-    </ul>
+    </div>
   </section>
-  <div class="h-8"></div>
+
+  <section class="border-y border-line bg-black/20 py-24 lg:py-28">
+    <div class="container-x">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="kicker reveal">Try it yourself</p>
+        <h2 class="h-section mt-2 reveal" style="--d:80ms">Demo galleries</h2>
+        <p class="lead mt-4 reveal" style="--d:160ms">Open one with the password shown. Real client passwords are never published; these are public so you can explore.</p>
+      </div>
+      <div class="mt-14 grid gap-6 md:grid-cols-2">
+        {demos.map((d, i) => (
+          <article class="group relative isolate overflow-hidden border border-line reveal" style={`--d:${i * 120}ms`}>
+            <div class="absolute inset-0 -z-10"><Img id={d.bg} sizes="(min-width:768px) 50vw, 100vw" decorative class="h-full w-full scale-110 object-cover blur-md brightness-[.38] transition duration-700 group-hover:scale-125" /></div>
+            <div class="p-8 sm:p-10">
+              <div class="flex items-center justify-between">
+                <p class="label">{d.event}</p>
+                <svg class="text-paper" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+              </div>
+              <h3 class="mt-4 text-5xl">{d.title}</h3>
+              <p class="mt-1 text-sm text-paper/70">{d.n} proofs · watermarked</p>
+              <dl class="mt-8 space-y-3 text-sm">
+                <div class="flex flex-wrap items-center gap-3"><dt class="w-20 text-mist">Link</dt><dd><code class="bg-ink/70 px-2 py-1">/clients/{d.slug}</code></dd></div>
+                <div class="flex flex-wrap items-center gap-3"><dt class="w-20 text-mist">Password</dt><dd class="flex flex-wrap items-center gap-3"><code class="bg-ink/70 px-2 py-1 text-seaglass">{d.password}</code>
+                  <button type="button" class="chip !py-1.5 !text-[.62rem]" data-copy={d.password} data-label="Copy">Copy</button></dd></div>
+              </dl>
+              <a class="btn btn-primary mt-9" href={`/clients/${d.slug}`}>Open gallery <span class="arr" aria-hidden="true">→</span></a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x py-24 lg:py-28">
+    <div class="grid gap-12 lg:grid-cols-[.8fr_1.4fr]">
+      <div><p class="kicker reveal">Good to know</p><h2 class="h-section mt-2 reveal" style="--d:80ms">Gallery questions</h2></div>
+      <div class="faq reveal">
+        <details open><summary>I lost my password</summary><div>No problem. Email <a class="underline hover:text-seaglass" href="mailto:hello@saltmarsh.example">hello@saltmarsh.example</a> and we will send a new one. We can only change a password, never read your old one.</div></details>
+        <details><summary>Why are my photos watermarked?</summary><div>Proofs carry a PROOF watermark so you can browse and choose freely. Your finished, unmarked images and prints are delivered after you pick your favourites.</div></details>
+        <details><summary>Is my gallery really private?</summary><div>Yes. Galleries are not listed anywhere, search engines are told to stay away, and the page and photos are only handed out after your password is checked. Each gallery has its own password.</div></details>
+        <details><summary>Can I share my gallery with family?</summary><div>You can share the link and password with people you trust. Anyone with both can view the proofs, so keep them close.</div></details>
+      </div>
+    </div>
+  </section>
 </Base>

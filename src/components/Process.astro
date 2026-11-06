@@ -1,0 +1,17 @@
+---
+const steps = [
+  { n: '1', t: 'Say hello', d: 'Tell us about the day, the place and the mood you are after. A relaxed 20-minute call, no pressure.' },
+  { n: '2', t: 'Plan the light', d: 'We scout, read the tide tables and weather windows, and pick the hour when the coast looks its best.' },
+  { n: '3', t: 'The session', d: 'Unhurried and unposed. Mostly we talk, you laugh, and the camera quietly does its work.' },
+  { n: '4', t: 'Your private gallery', d: 'Within about two weeks your passworded proofs arrive, followed by finished images and prints.' },
+];
+---
+<div class="steps">
+  {steps.map((s, i) => (
+    <div class="reveal" style={`--d:${i * 120}ms`}>
+      <div class="step-n">{s.n}</div>
+      <h3 class="mt-5 text-3xl">{s.t}</h3>
+      <p class="mt-2 text-mist leading-relaxed">{s.d}</p>
+    </div>
+  ))}
+</div>

@@ -10,8 +10,21 @@ const manifest = JSON.parse(fs.readFileSync('cache/manifest.json', 'utf8'));
 const JPG_OPTS = JPG;
 
 const portfolio = [];
+const siteImages = {};
 for (const [key, meta] of Object.entries(manifest)) {
   const [kind, group, file] = key.split('/');
+  if (kind === 'site') {
+    // page imagery (heroes/backdrops): public, 1800/1200/600 wide, recorded with real dimensions
+    const name = path.basename(group, '.jpg');
+    const src = path.join('originals', 'site', group);
+    const outDir = 'public/photos/site';
+    fs.mkdirSync(outDir, { recursive: true });
+    const { width, height } = await sharp(src).rotate().metadata();
+    for (const w of [1800, 1200, 600]) await sharp(src).rotate().resize({ width: Math.min(w, width) }).jpeg(JPG_OPTS).toFile(path.join(outDir, `${name}-${w}.jpg`));
+    const w1800 = Math.min(1800, width);
+    siteImages[name] = { width: w1800, height: Math.round((height / width) * w1800), alt: meta.alt, photographer: meta.photographer };
+    continue;
+  }
   const base = path.basename(file, '.jpg');
   if (kind === 'portfolio') {
     const src = path.join('originals', 'portfolio', file);
@@ -37,6 +50,7 @@ const order = ['weddings', 'portraits', 'landscapes'];
 portfolio.sort((a, b) => a.id.split('-')[1] - b.id.split('-')[1] || order.indexOf(a.category) - order.indexOf(b.category));
 fs.mkdirSync('src/data', { recursive: true });
 fs.writeFileSync('src/data/portfolio.json', JSON.stringify(portfolio, null, 2));
+fs.writeFileSync('src/data/site-images.json', JSON.stringify(siteImages, null, 2));
 
 // credits.json: photographer, profile URL, photo URL per image (Unsplash attribution)
 const credits = Object.entries(manifest).map(([key, m]) => ({

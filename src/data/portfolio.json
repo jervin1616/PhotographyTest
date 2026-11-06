@@ -94,5 +94,53 @@
     "height": 1195,
     "alt": "Golden marsh grasses border a calm blue river",
     "photographer": "Michael Xi"
+  },
+  {
+    "id": "weddings-05",
+    "category": "weddings",
+    "width": 1800,
+    "height": 2250,
+    "alt": "a man and a woman on a beach",
+    "photographer": "Josh Withers"
+  },
+  {
+    "id": "portraits-05",
+    "category": "portraits",
+    "width": 1800,
+    "height": 2697,
+    "alt": "a woman in a red and white dress running on the beach",
+    "photographer": "Rachel Salles"
+  },
+  {
+    "id": "landscapes-05",
+    "category": "landscapes",
+    "width": 1800,
+    "height": 1200,
+    "alt": "Sunset over the sea pier and colorful clouds",
+    "photographer": "Nick Russill"
+  },
+  {
+    "id": "weddings-06",
+    "category": "weddings",
+    "width": 1800,
+    "height": 2899,
+    "alt": "A woman in a long white dress on a beach",
+    "photographer": "Veronica Lybbert"
+  },
+  {
+    "id": "portraits-06",
+    "category": "portraits",
+    "width": 1800,
+    "height": 2588,
+    "alt": "a woman sitting on top of a rock next to a body of water",
+    "photographer": "Pooria Shahriari"
+  },
+  {
+    "id": "landscapes-06",
+    "category": "landscapes",
+    "width": 1800,
+    "height": 1200,
+    "alt": "Sandy dunes with tall grass under a clear blue sky",
+    "photographer": "Peter Hoogmoed"
   }
 ]

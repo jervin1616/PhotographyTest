@@ -1,0 +1,20 @@
+---
+import Img from './Img.astro';
+import Wave from './Wave.astro';
+interface Props { kicker?: string; title?: string; text?: string; primary?: [string, string]; secondary?: [string, string]; image?: string }
+const { kicker = "Let's make something timeless", title = 'Your story, told in salt and light.', text = 'Tell us about your day. We reply within one working day, usually with a very long list of questions.',
+  primary = ['Book a session', '/contact/'], secondary = ['See the packages', '/services/'], image = 'site/cta-bg' } = Astro.props;
+---
+<section class="relative isolate overflow-hidden py-28 sm:py-36 text-center">
+  <div class="absolute inset-[-8%] -z-20" data-parallax="0.08"><Img id={image} sizes="100vw" decorative class="h-full w-full object-cover" /></div>
+  <div class="absolute inset-0 -z-10" style="background:linear-gradient(to bottom,#0b1620 0%,rgba(11,22,32,.62) 30%,rgba(11,22,32,.62) 70%,#0b1620 100%)"></div>
+  <div class="container-x">
+    <p class="kicker reveal">{kicker}</p>
+    <h2 class="h-section mx-auto mt-4 max-w-3xl reveal" style="--d:100ms">{title}</h2>
+    <p class="lead mx-auto mt-5 max-w-xl reveal" style="--d:200ms; color: rgba(236,228,214,.8)">{text}</p>
+    <div class="mt-9 flex flex-wrap justify-center gap-3 reveal" style="--d:300ms">
+      <a class="btn btn-primary" href={primary[1]}>{primary[0]} <span class="arr" aria-hidden="true">→</span></a>
+      <a class="btn btn-ghost" href={secondary[1]}>{secondary[0]}</a>
+    </div>
+  </div>
+</section>

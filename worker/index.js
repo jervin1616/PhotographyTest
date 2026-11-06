@@ -174,7 +174,7 @@ function secure(res) {
   h.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   h.set('X-Content-Type-Options', 'nosniff');
   h.set('Referrer-Policy', 'no-referrer');
-  h.set('Content-Security-Policy', "default-src 'none'; img-src 'self'; font-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+  h.set('Content-Security-Policy', "default-src 'none'; img-src 'self'; font-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
   return new Response(res.body, { status: res.status, headers: h });
 }
 

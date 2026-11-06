@@ -1,0 +1,14 @@
+---
+// Gently drifting wave edge between a hero and the page. Two layers, different speeds.
+interface Props { color?: string; color2?: string }
+const { color = '#0b1620', color2 = '#142231' } = Astro.props;
+const path = (phase: number, amp: number) => {
+  let d = 'M0,100 L0,' + (58 + amp * Math.sin(phase)).toFixed(1);
+  for (let x = 24; x <= 2880; x += 24) d += ' L' + x + ',' + (58 + amp * Math.sin(phase + (x / 1440) * Math.PI * 2 * 2)).toFixed(1);
+  return d + ' L2880,100 Z';
+};
+---
+<div class="wave" aria-hidden="true">
+  <svg viewBox="0 0 2880 100" preserveAspectRatio="none"><path d={path(0, 24)} fill={color2} /></svg>
+  <svg viewBox="0 0 2880 100" preserveAspectRatio="none"><path d={path(2.2, 20)} fill={color} /></svg>
+</div>

@@ -6,6 +6,7 @@ loadEnv();
 const QUERIES = [
   'seaside wedding', 'beach wedding ceremony', 'beach portrait',
   'couple walking beach shore', 'coastal sand dunes', 'pier sunrise', 'salt marsh',
+  'photographer camera beach',
 ];
 fs.mkdirSync('cache', { recursive: true });
 try {

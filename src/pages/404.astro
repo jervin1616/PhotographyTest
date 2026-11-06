@@ -1,10 +1,21 @@
 ---
 import Base from '../layouts/Base.astro';
+import Img from '../components/Img.astro';
+import Wave from '../components/Wave.astro';
 ---
-<Base title="Not found">
-  <section class="mx-auto max-w-2xl px-5 py-24 text-center">
-    <h1 class="text-5xl">Lost at sea</h1>
-    <p class="mt-4 text-mist">That page does not exist.</p>
-    <a href="/" class="mt-8 inline-block bg-paper text-ink px-6 py-3 text-sm">Back to the shore</a>
+<Base title="Page not found" description="That page drifted out with the tide.">
+  <section class="relative isolate grid min-h-[100svh] place-items-center overflow-hidden text-center">
+    <div class="absolute inset-[-6%] -z-20" data-parallax="0.06"><Img id="portfolio/landscapes-02" sizes="100vw" loading="eager" decorative class="h-full w-full object-cover" /></div>
+    <div class="absolute inset-0 -z-10" style="background:radial-gradient(ellipse at center,rgba(11,22,32,.5),rgba(11,22,32,.9) 75%)"></div>
+    <div class="container-x pt-28">
+      <p class="label fade-in">Error 404</p>
+      <h1 class="mt-3 font-script text-[clamp(4.5rem,16vw,11rem)] font-normal leading-[.9] fade-in" style="--d:120ms">Lost at sea</h1>
+      <p class="lead mx-auto mt-6 max-w-md fade-in" style="--d:300ms; color: rgba(236,228,214,.85)">That page has drifted out with the tide. Let's get you back to shore.</p>
+      <div class="mt-9 flex flex-wrap justify-center gap-3 fade-in" style="--d:450ms">
+        <a class="btn btn-primary" href="/">Back to the shore <span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="/portfolio/">Browse the portfolio</a>
+      </div>
+    </div>
+    <Wave />
   </section>
 </Base>

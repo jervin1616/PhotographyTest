@@ -1,0 +1,44 @@
+{
+  "about-hero": {
+    "width": 1800,
+    "height": 1201,
+    "alt": "Red marsh plants with tall green reeds under white sky",
+    "photographer": "Jon Geng"
+  },
+  "services-hero": {
+    "width": 1800,
+    "height": 2400,
+    "alt": "A wooden boardwalk leads through a beautiful marsh",
+    "photographer": "Brett Meliti"
+  },
+  "contact-hero": {
+    "width": 1800,
+    "height": 1200,
+    "alt": "A long wooden pier extends into the ocean at sunrise",
+    "photographer": "Kaitlynn Sorondo"
+  },
+  "login-hero": {
+    "width": 1800,
+    "height": 1200,
+    "alt": "a sandy beach with grass blowing in the wind",
+    "photographer": "Annie Spratt"
+  },
+  "cta-bg": {
+    "width": 1800,
+    "height": 1349,
+    "alt": "a grassy field with a beach in the background",
+    "photographer": "Annie Spratt"
+  },
+  "about-story": {
+    "width": 1800,
+    "height": 1200,
+    "alt": "woman holding camera standing on seashore",
+    "photographer": "Tim Mossholder"
+  },
+  "about-detail": {
+    "width": 1800,
+    "height": 1350,
+    "alt": "black samsung dslr camera taking photo of sea waves crashing on shore during daytime",
+    "photographer": "Konstantin Dyadyun"
+  }
+}

@@ -1,0 +1,21 @@
+---
+import Img from './Img.astro';
+import Wave from './Wave.astro';
+import { imgInfo } from '../lib/images';
+interface Props { image: string; kicker?: string; title: string; subtitle?: string; small?: boolean; position?: string }
+const { image, kicker, title, subtitle, small = false, position = 'center' } = Astro.props;
+const info = imgInfo(image);
+const words = title.split(' ');
+---
+<section class:list={['page-hero', small && 'sm']}>
+  <div class="bg" data-parallax="0.1"><Img id={image} sizes="100vw" loading="eager" fetchpriority="high" decorative style={`object-position:${position}`} /></div>
+  <div class="container-x relative">
+    {kicker && <p class="kicker fade-in" style="--d:120ms">{kicker}</p>}
+    <h1 class="h-display mt-2 max-w-4xl" aria-label={title}>
+      {words.map((w, n) => <><span class="word" aria-hidden="true"><span style={`--i:${n}`}>{w}</span></span>{' '}</>)}
+    </h1>
+    {subtitle && <p class="lead mt-6 max-w-2xl fade-in" style="--d:750ms; color: rgba(236,228,214,.82)">{subtitle}</p>}
+  </div>
+  <p class="credit">Photo by {info.photographerUrl ? <a href={info.photographerUrl} rel="noopener" class="underline">{info.photographer}</a> : info.photographer} · Unsplash</p>
+  <Wave />
+</section>
